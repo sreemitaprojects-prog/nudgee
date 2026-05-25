@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nudge — Better Prompts for Students</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #FDF8F2;
+    --orange: #E88030;
+    --orange-dark: #C25A1A;
+    --orange-light: #FAE7D0;
+    --brown-deep: #1E1208;
+    --brown-mid: #6B4A2A;
+    --brown-light: #A07850;
+    --sand: #F5EDE4;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--cream);
+    color: var(--brown-deep);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Blobs ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.30;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 { width: 500px; height: 500px; background: #F5C07A; top: -140px; right: -100px; }
+  .blob-2 { width: 340px; height: 340px; background: #F7A96B; bottom: 80px; left: -80px; }
+  .blob-3 { width: 240px; height: 240px; background: #FBD9A5; top: 55%; left: 38%; }
+
+  /* ── Nav ── */
+  nav {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .logo {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: var(--orange-dark);
+    letter-spacing: -0.5px;
+    text-decoration: none;
+  }
+  .logo span { color: var(--orange); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.2rem;
+    list-style: none;
+    align-items: center;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--brown-mid);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--orange-dark); }
+
+  .btn-nav {
+    background: var(--orange);
+    color: #fff !important;
+    padding: 0.52rem 1.3rem;
+    border-radius: 999px;
+    transition: background 0.2s !important;
+    box-shadow: 0 3px 14px rgba(232,128,48,0.28);
+  }
+  .btn-nav:hover { background: var(--orange-dark) !important; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 5.5rem 1.5rem 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.77rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    background: var(--orange-light);
+    padding: 0.38rem 1.1rem;
+    border-radius: 999px;
+    margin-bottom: 1.6rem;
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(2.6rem, 5.5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--brown-deep);
+    margin-bottom: 1.3rem;
+    letter-spacing: -1px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--orange);
+    position: relative;
+    display: inline-block;
+  }
+  h1 em::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #F5C07A;
+    border-radius: 2px;
+    z-index: -1;
+  }
+
+  .subtitle {
+    font-size: 1.13rem;
+    line-height: 1.75;
+    color: var(--brown-mid);
+    max-width: 540px;
+    margin: 0 auto 2.6rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .btn-primary {
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    padding: 0.9rem 2.2rem;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    box-shadow: 0 5px 24px rgba(232, 128, 48, 0.32);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--brown-mid);
+    border: 1.5px solid #D4A070;
+    padding: 0.9rem 1.9rem;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-secondary:hover { background: var(--orange-light); border-color: var(--orange-dark); color: var(--orange-dark); }
+
+  .trust-line {
+    font-size: 0.82rem;
+    color: var(--brown-light);
+    margin-top: 0.7rem;
+  }
+  .trust-line span { margin: 0 0.4rem; opacity: 0.4; }
+
+  /* ── Demo Card ── */
+  .demo-wrap {
+    position: relative;
+    z-index: 5;
+    max-width: 720px;
+    margin: 3rem auto 0;
+    padding: 0 1.5rem;
+  }
+
+  .demo-card {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(210,150,90,0.22);
+    border-radius: 22px;
+    padding: 2rem 2.2rem;
+    box-shadow: 0 10px 50px rgba(180,100,30,0.09);
+  }
+
+  .demo-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    margin-bottom: 1.2rem;
+  }
+
+  .before-after {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.8rem;
+    align-items: center;
+  }
+
+  .ba-block {
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+  }
+  .ba-block.before {
+    background: #F5EDE4;
+    border: 1px solid #E0C4A0;
+  }
+  .ba-block.after {
+    background: #FFF5E8;
+    border: 1.5px solid var(--orange);
+  }
+
+  .ba-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.55rem;
+    display: block;
+  }
+  .before .ba-tag { color: #B07040; }
+  .after .ba-tag { color: var(--orange-dark); }
+
+  .ba-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #4A3020;
+  }
+
+  .ba-arrow {
+    font-size: 1.5rem;
+    color: var(--orange);
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* ── How it works ── */
+  .section {
+    position: relative;
+    z-index: 5;
+    max-width: 800px;
+    margin: 5rem auto 0;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .section-label {
+    font-size: 0.77rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--orange-dark);
+    margin-bottom: 0.7rem;
+    display: block;
+  }
+
+  h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    color: var(--brown-deep);
+    margin-bottom: 0.7rem;
+    letter-spacing: -0.5px;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--brown-mid);
+    max-width: 460px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.65;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.3rem;
+    margin-top: 1rem;
+  }
+
+  .step-card {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(200,140,80,0.18);
+    border-radius: 18px;
+    padding: 1.6rem 1.3rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(180,100,30,0.1); }
+
+  .step-num {
+    width: 40px;
+    height: 40px;
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    border-radius: 50%;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+
+  .step-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--brown-deep);
+    margin-bottom: 0.45rem;
+  }
+
+  .step-desc {
+    font-size: 0.85rem;
+    color: var(--brown-mid);
+    line-height: 1.6;
+  }
+
+  /* ── Subjects ── */
+  .subjects-section {
+    position: relative;
+    z-index: 5;
+    max-width: 800px;
+    margin: 5rem auto 0;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+
+  .subjects-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .subject-pill {
+    background: rgba(255,255,255,0.75);
+    border: 1px solid rgba(200,140,80,0.25);
+    border-radius: 999px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--brown-mid);
+    cursor: pointer;
+    transition: all 0.18s;
+    backdrop-filter: blur(6px);
+  }
+  .subject-pill:hover, .subject-pill.active {
+    background: var(--orange-light);
+    border-color: var(--orange);
+    color: var(--orange-dark);
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    position: relative;
+    z-index: 5;
+    max-width: 680px;
+    margin: 5.5rem auto 0;
+    padding: 0 1.5rem 6rem;
+    text-align: center;
+  }
+
+  .cta-card {
+    background: linear-gradient(135deg, #FFF0E0 0%, #FDE8CC 100%);
+    border: 1.5px solid rgba(232,128,48,0.22);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+  }
+
+  .cta-card h2 { margin-bottom: 0.8rem; }
+
+  .cta-card p {
+    font-size: 1rem;
+    color: var(--brown-mid);
+    margin-bottom: 2rem;
+    line-height: 1.65;
+  }
+
+  /* ── Footer ── */
+  footer {
+    position: relative;
+    z-index: 5;
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.82rem;
+    color: var(--brown-light);
+    border-top: 1px solid rgba(200,140,80,0.15);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    nav { padding: 1.2rem 1.4rem; }
+    .nav-links li:not(:last-child) { display: none; }
+    .before-after { grid-template-columns: 1fr; }
+    .ba-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- Nav -->
+<nav>
+  <a href="#" class="logo">nudge<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#subjects">Subjects</a></li>
+    <li><a href="#try" class="btn-nav">Try for free</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <span class="eyebrow">✦ Built for college students</span>
+  <h1>Stop asking AI the<br><em>wrong questions</em></h1>
+  <p class="subtitle">You know what you need to study. Nudge builds the perfect AI prompt for you — so you stop getting vague answers and start actually understanding things.</p>
+  <div class="hero-actions">
+    <a href="#try" class="btn-primary">Build my first prompt →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+  <p class="trust-line">Free to use <span>·</span> No account needed <span>·</span> Works with ChatGPT, Claude & more</p>
+</section>
+
+<!-- Before / After -->
+<div class="demo-wrap">
+  <div class="demo-card">
+    <p class="demo-label">✦ See the difference</p>
+    <div class="before-after">
+      <div class="ba-block before">
+        <span class="ba-tag">😬 Without Nudge</span>
+        <p class="ba-text">"explain mitosis"</p>
+      </div>
+      <div class="ba-arrow">→</div>
+      <div class="ba-block after">
+        <span class="ba-tag">✨ With Nudge</span>
+        <p class="ba-text">"Explain the 5 stages of mitosis to a second-year Biology student preparing for a multiple choice exam. Use a comparison to a cell 'photocopying itself' and end with 3 likely exam questions."</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<section class="section" id="how">
+  <span class="section-label">How it works</span>
+  <h2>Three steps. Better answers.</h2>
+  <p class="section-sub">No prompt engineering degree required. Nudge does the hard part.</p>
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <p class="step-title">Pick your subject</p>
+      <p class="step-desc">Biology, Law, History, Economics — Nudge knows the context and terminology for each.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <p class="step-title">Answer 3 quick questions</p>
+      <p class="step-desc">What's the topic? What do you need — summary, exam prep, essay help? How deep?</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <p class="step-title">Copy & paste</p>
+      <p class="step-desc">One tap. Drop your polished prompt into ChatGPT, Claude, Gemini — wherever you study.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Subjects -->
+<section class="subjects-section" id="subjects">
+  <span class="section-label">Subjects</span>
+  <h2>Works for what you study</h2>
+  <p class="section-sub">Nudge has prompt logic tailored to each subject — not one-size-fits-all templates.</p>
+  <div class="subjects-grid">
+    <span class="subject-pill active">🧬 Biology</span>
+    <span class="subject-pill">⚖️ Law</span>
+    <span class="subject-pill">📉 Economics</span>
+    <span class="subject-pill">🏛️ History</span>
+    <span class="subject-pill">🔬 Chemistry</span>
+    <span class="subject-pill">📖 Literature</span>
+    <span class="subject-pill">💻 Computer Science</span>
+    <span class="subject-pill">🧠 Psychology</span>
+    <span class="subject-pill">📊 Statistics</span>
+    <span class="subject-pill">🌍 Political Science</span>
+    <span class="subject-pill">➕ More soon...</span>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="try">
+  <div class="cta-card">
+    <h2>Ready to actually get answers?</h2>
+    <p>Build your first prompt in under 60 seconds. No signup, no fluff — just better studying.</p>
+    <a href="#" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2.6rem;">Start now, it's free →</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>nudge. &nbsp;·&nbsp; Made for students who have better things to do than re-prompt five times.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.subject-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.subject-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
