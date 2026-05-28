@@ -1,0 +1,389 @@
+/* ═══════════════════════════════════════════════════
+   NUDGE — shared.css
+   Design system. Loaded by every page.
+═══════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:            #F0F4FF;
+  --surface:       #FFFFFF;
+  --primary:       #4A6CF7;
+  --secondary:     #B8C8FF;
+  --danger:        #F07070;
+  --warning:       #F5C26B;
+  --success:       #5FBF8F;
+  --text-primary:  #1A1F36;
+  --text-secondary:#6B7280;
+  --marquee-bg:    #1A1F36;
+  --marquee-text:  #F0F4FF;
+  --border:        #E2E8F0;
+  --warning-text:  #C69A00;
+
+  --font-body:     'Plus Jakarta Sans', sans-serif;
+  --font-display:  'Fraunces', serif;
+  --app-width:     430px;
+}
+
+/* ── Base ── */
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── App shell ── */
+#app {
+  max-width: var(--app-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ── Marquee ── */
+.marquee-bar {
+  background: var(--marquee-bg);
+  color: var(--marquee-text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.marquee-inner {
+  display: inline-block;
+  animation: marquee 22s linear infinite;
+}
+.marquee-inner span { margin: 0 40px; }
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-width);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 3px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  transition: color 0.15s;
+  text-decoration: none;
+}
+.nav-btn:hover, .nav-btn.active { color: var(--primary); }
+.nav-btn svg {
+  width: 22px; height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Scroll area ── */
+.view-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin: 0 16px 12px;
+}
+
+/* ── Section title ── */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 20px 16px 12px;
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.badge-safe    { background: #DFFAEE; color: var(--success); }
+.badge-warning { background: #FEF9EC; color: var(--warning-text); }
+.badge-danger  { background: #FEECEC; color: var(--danger); }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.97); opacity: 0.88; }
+.btn-primary   { background: var(--primary); color: #fff; }
+.btn-secondary { background: var(--secondary); color: var(--primary); }
+.btn-danger    { background: #FEECEC; color: var(--danger); }
+.btn-ghost     { background: transparent; border: 1.5px solid var(--border); color: var(--text-secondary); }
+.btn-full      { width: 100%; }
+.btn-sm        { padding: 8px 14px; font-size: 13px; border-radius: 8px; }
+
+/* ── Inputs ── */
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+}
+.input:focus { border-color: var(--primary); }
+.input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+
+/* ── Form ── */
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.form-group { margin-bottom: 20px; }
+.form-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 5px;
+}
+
+/* ── Button-group selector ── */
+.btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn-group-item {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.btn-group-item.selected {
+  border-color: var(--primary);
+  background: #EEF1FF;
+  color: var(--primary);
+}
+
+/* ── Toggle ── */
+.toggle-wrap  { display: flex; align-items: center; gap: 12px; }
+.toggle-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.toggle {
+  position: relative;
+  width: 44px; height: 26px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.toggle input:checked + .toggle-slider { background: var(--primary); }
+.toggle input:checked + .toggle-slider::after { transform: translateX(18px); }
+
+/* ── Day checkboxes ── */
+.day-checks { display: flex; gap: 6px; flex-wrap: wrap; }
+.day-check-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 36px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.day-check-label input { display: none; }
+.day-check-label.checked {
+  border-color: var(--primary);
+  background: #EEF1FF;
+  color: var(--primary);
+}
+
+/* ── Log dots (last N classes) ── */
+.log-dot-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.log-dot {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+.log-dot-P { background: #DFFAEE; color: var(--success); }
+.log-dot-A { background: #FEECEC; color: var(--danger); }
+.log-dot-C { background: #FEF9EC; color: var(--warning-text); }
+.log-dot-u { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 31, 54, 0.45);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  padding: 0 24px 32px;
+  width: 100%;
+  max-width: var(--app-width);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 100px;
+  margin: 14px auto 20px;
+}
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* ── Streak banner ── */
+.streak-banner {
+  margin: 12px 16px 0;
+  background: var(--text-primary);
+  color: var(--bg);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 52px 28px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 16px;
+}
+
+/* ── Utility ── */
+.text-success  { color: var(--success); }
+.text-warning  { color: var(--warning-text); }
+.text-danger   { color: var(--danger); }
+.text-secondary{ color: var(--text-secondary); }
+.text-primary  { color: var(--text-primary); }
+.font-display  { font-family: var(--font-display); }
+.hidden        { display: none !important; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+
+/* ── Responsive ── */
+@media (max-width: 375px) {
+  .section-title { font-size: 18px; }
+}
