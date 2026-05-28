@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>nudge. — Dashboard</title>
+  <meta name="theme-color" content="#1A1F36">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ── Greeting ── */
+    .greeting-block {
+      padding: 22px 16px 0;
+    }
+    .greeting-hi {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+    .greeting-name {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.15;
+    }
+    .greeting-roast {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* ── Big number block ── */
+    .hero-block {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 20px 16px 0;
+      gap: 12px;
+    }
+    .hero-left { flex: 1; }
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 2px;
+    }
+    .hero-pct {
+      font-family: var(--font-display);
+      font-size: 76px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+    .hero-subject-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* threshold pill */
+    .threshold-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .threshold-pill.safe    { background: #DFFAEE; color: var(--success); }
+    .threshold-pill.warning { background: #FEF9EC; color: var(--warning-text); }
+    .threshold-pill.danger  { background: #FEECEC; color: var(--danger); }
+    .threshold-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* summary line */
+    .summary-line {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding: 10px 16px 0;
+    }
+    .summary-line span {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* ── Subject mini list ── */
+    .subject-mini-list {
+      margin: 16px 16px 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .subject-mini-row {
+      display: flex;
+      align-items: center;
+      padding: 11px 14px;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .subject-mini-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+    }
+    .subject-mini-row:active { background: var(--bg); }
+    .subject-mini-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-safe    { background: var(--success); }
+    .dot-warning { background: var(--warning); }
+    .dot-danger  { background: var(--danger); }
+    .dot-unknown { background: var(--border); }
+    .subject-mini-name {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .subject-mini-pct {
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .subject-mini-budget {
+      font-size: 11px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    /* ── Today's classes ── */
+    .today-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 22px 16px 10px;
+    }
+    .today-section-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .today-date-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* class card */
+    .class-card {
+      margin: 0 16px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .class-card.logged-P { border-color: var(--success); }
+    .class-card.logged-A { border-color: var(--danger); }
+    .class-card.logged-C { border-color: var(--warning); }
+
+    .class-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+    }
+    .class-card-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+    .class-card-pct {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* logged confirmation bar */
+    .class-logged-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .class-logged-bar.bar-P { background: #DFFAEE; color: var(--success); }
+    .class-logged-bar.bar-A { background: #FEECEC; color: var(--danger); }
+    .class-logged-bar.bar-C { background: #FEF9EC; color: var(--warning-text); }
+    .class-logged-undo {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0.6;
+      color: inherit;
+    }
+    .class-logged-undo:hover { opacity: 1; }
+
+    /* action buttons */
+    .class-card-actions {
+      display: flex;
+      border-top: 1px solid var(--border);
+    }
+    .log-btn {
+      flex: 1;
+      padding: 13px 6px;
+      border: none;
+      background: none;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .log-btn:not(:last-child) { border-right: 1px solid var(--border); }
+    .log-btn:hover { background: var(--bg); }
+    .log-btn:active { opacity: 0.7; }
+
+    /* no classes today */
+    .no-classes-today {
+      margin: 0 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .no-classes-icon {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--border);
+      margin-bottom: 8px;
+    }
+    .no-classes-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .no-classes-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* no subjects at all */
+    .setup-prompt {
+      margin: 24px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .setup-prompt-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .setup-prompt-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Marquee -->
+  <div class="marquee-bar">
+    <div class="marquee-inner" id="marquee-inner"></div>
+  </div>
+
+  <!-- Scroll content -->
+  <div class="view-content" id="main"></div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a class="nav-btn active" href="dashboard.html" data-page="dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Dashboard
+    </a>
+    <a class="nav-btn" href="subjects.html" data-page="subjects">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      Subjects
+    </a>
+    <a class="nav-btn" href="calendar.html" data-page="calendar">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Calendar
+    </a>
+    <a class="nav-btn" href="planner.html" data-page="planner">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      Planner
+    </a>
+    <a class="nav-btn" href="settings.html" data-page="settings">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Settings
+    </a>
+  </nav>
+
+</div>
+
+<script src="shared.js"></script>
+<script>
+  requireOnboarded();
+
+  // ── Setup marquee ──
+  const MARQUEE_MSGS = ['Log karo. Chill karo.', 'We just keep count.', 'How many classes today?'];
+  const inner = document.getElementById('marquee-inner');
+  const doubled = [...MARQUEE_MSGS, ...MARQUEE_MSGS].map(m => `<span>${m}</span>`).join('');
+  inner.innerHTML = doubled;
+
+  // ── Load state ──
+  const state = loadState();
+  const today = todayStr();
+  const threshold = state.profile.threshold;
+
+  // ── Helpers ──
+  function pctColorVal(pct) {
+    if (pct === null) return 'var(--text-secondary)';
+    if (pct >= threshold) return 'var(--success)';
+    if (pct >= threshold - 10) return 'var(--warning-text)';
+    return 'var(--danger)';
+  }
+
+  function statusFromPct(pct) {
+    if (pct === null) return 'unknown';
+    if (pct >= threshold) return 'safe';
+    if (pct >= threshold - 10) return 'warning';
+    return 'danger';
+  }
+
+  // ── Worst subject ──
+  function getWorstSubject() {
+    if (!state.subjects.length) return null;
+    let worst = null, worstPct = Infinity;
+    for (const s of state.subjects) {
+      const st = getSubjectStats(s, state);
+      const p = st.pct ?? 100;
+      if (p < worstPct) { worstPct = p; worst = { subject: s, stats: st }; }
+    }
+    return worst;
+  }
+
+  // ── Greeting ──
+  function greetingWord() {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  // ── Log a class ──
+  function logClass(subjectId, status) {
+    if (!state.logs[today]) state.logs[today] = {};
+    const current = state.logs[today][subjectId];
+    if (current === status) {
+      delete state.logs[today][subjectId];
+    } else {
+      state.logs[today][subjectId] = status;
+    }
+    saveState(state);
+    render();
+  }
+
+  function undoLog(subjectId) {
+    if (state.logs[today]) delete state.logs[today][subjectId];
+    saveState(state);
+    render();
+  }
+
+  // ── Render ──
+  function render() {
+    const main = document.getElementById('main');
+    const overall = getOverallStats(state);
+    const worst = getWorstSubject();
+    const roast = getSessionRoast(state);
+    const todaySubjects = getTodaySubjects(state);
+    const todayLogs = state.logs[today] || {};
+    const profile = state.profile;
+
+    // date label
+    const dateLabel = parseDate(today).toLocaleDateString('en-IN', {
+      weekday: 'long', day: 'numeric', month: 'long'
+    });
+
+    // ── Greeting block ──
+    const greetingHtml = `
+      <div class="greeting-block">
+        <div class="greeting-hi">${greetingWord()},</div>
+        <div class="greeting-name">${profile.name}.</div>
+        <div class="greeting-roast">${roast}</div>
+      </div>
+    `;
+
+    // ── Hero number — worst subject ──
+    let heroHtml = '';
+    if (!state.subjects.length) {
+      heroHtml = '';
+    } else if (worst) {
+      const { stats, subject } = worst;
+      const status = statusFromPct(stats.pct);
+      const pillClass = status === 'safe' ? 'safe' : status === 'warning' ? 'warning' : 'danger';
+      const pillLabel = status === 'safe' ? `${stats.bunkBudget} bunks left` :
+                        status === 'warning' ? 'Getting close' : `${stats.recovery} to recover`;
+
+      heroHtml = `
+        <div class="hero-block">
+          <div class="hero-left">
+            <div class="hero-label">Weakest subject</div>
+            <div class="hero-pct" style="color:${pctColorVal(stats.pct)}">${stats.pct !== null ? stats.pct + '%' : '—'}</div>
+            <div class="hero-subject-name">${subject.name}</div>
+          </div>
+          <div style="text-align:right;padding-bottom:10px">
+            <div class="threshold-pill ${pillClass}">
+              <div class="threshold-dot"></div>
+              ${pillLabel}
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);font-weight:500">
+              Overall: <strong style="color:${pctColorVal(overall.pct)}">${overall.pct !== null ? overall.pct + '%' : '—'}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ── Summary line ──
+    const summaryLine = getSummaryLine(state);
+    const summaryHtml = summaryLine ? `<div class="summary-line">${summaryLine}</div>` : '';
+
+    // ── Subject mini breakdown ──
+    let miniHtml = '';
+    if (state.subjects.length) {
+      const rows = state.subjects.map(s => {
+        const st = getSubjectStats(s, state);
+        const dotClass = st.status === 'safe' ? 'dot-safe' :
+                         st.status === 'warning' ? 'dot-warning' :
+                         st.status === 'danger' ? 'dot-danger' : 'dot-unknown';
+        const budgetLabel = st.pct === null ? 'No data' :
+                            st.status === 'safe' ? `${st.bunkBudget} left` :
+                            st.recovery > 0 ? `Need ${st.recovery}` : 'At limit';
+        return `
+          <div class="subject-mini-row" onclick="window.location.href='subjects.html'">
+            <div class="subject-mini-dot ${dotClass}"></div>
+            <div class="subject-mini-name">${s.name}</div>
+            <div class="subject-mini-budget">${budgetLabel}</div>
+            <div class="subject-mini-pct" style="color:${pctColorVal(st.pct)}">${st.pct !== null ? st.pct + '%' : '—'}</div>
+          </div>
+        `;
+      }).join('');
+      miniHtml = `<div class="subject-mini-list">${rows}</div>`;
+    }
+
+    // ── Today's classes ──
+    let todayHtml = '';
+    if (!state.subjects.length) {
+      todayHtml = `
+        <div class="setup-prompt">
+          <div class="setup-prompt-title">No subjects yet.</div>
+          <div class="setup-prompt-sub">Add your subjects and we'll start tracking. Takes about 2 minutes.</div>
+          <a href="subjects.html" class="btn btn-primary">Add subjects</a>
+        </div>
+      `;
+    } else if (!todaySubjects.length) {
+      todayHtml = `
+        <div class="no-classes-today">
+          <div class="no-classes-icon">—</div>
+          <div class="no-classes-title">No classes today.</div>
+          <div class="no-classes-sub">Enjoy it. You've earned it.</div>
+        </div>
+      `;
+    } else {
+      const allLogged = todaySubjects.every(s => todayLogs[s.id]);
+      todayHtml = todaySubjects.map(s => {
+        const log = todayLogs[s.id];
+        const st = getSubjectStats(s, state);
+
+        const loggedLabels = { P: 'Marked present', A: 'Marked absent', C: 'Marked cancelled' };
+        const loggedBar = log ? `
+          <div class="class-logged-bar bar-${log}">
+            <span>${loggedLabels[log]}</span>
+            <button class="class-logged-undo" onclick="event.stopPropagation();undoLog('${s.id}')">Undo</button>
+          </div>
+        ` : `
+          <div class="class-card-actions">
+            <button class="log-btn" onclick="logClass('${s.id}','P')">Present</button>
+            <button class="log-btn" onclick="logClass('${s.id}','A')">Absent</button>
+            <button class="log-btn" onclick="logClass('${s.id}','C')">Cancelled</button>
+          </div>
+        `;
+
+        return `
+          <div class="class-card ${log ? 'logged-'+log : ''}">
+            <div class="class-card-top">
+              <div class="class-card-name">${s.name}</div>
+              <div class="class-card-pct" style="color:${pctColorVal(st.pct)}">${st.pct !== null ? st.pct + '%' : '—'}</div>
+            </div>
+            ${loggedBar}
+          </div>
+        `;
+      }).join('');
+
+      if (allLogged) {
+        const notLogged = todaySubjects.filter(s => !todayLogs[s.id]).length;
+        todayHtml += `
+          <div style="text-align:center;padding:8px 16px 4px;font-size:13px;color:var(--text-secondary);font-weight:500">
+            All classes logged for today.
+          </div>
+        `;
+      }
+    }
+
+    main.innerHTML = `
+      ${greetingHtml}
+      ${heroHtml}
+      ${summaryHtml}
+      ${miniHtml}
+      <div class="today-section-header">
+        <div class="today-section-title">Today's classes</div>
+        <div class="today-date-label">${dateLabel}</div>
+      </div>
+      ${todayHtml}
+      <div style="height:8px"></div>
+    `;
+  }
+
+  render();
+</script>
+</body>
+</html>
