@@ -2,551 +2,1766 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nudge — Better Prompts for Students</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>nudge.</title>
+<link rel="manifest" href="#" id="manifest-link">
+<meta name="theme-color" content="#1A1F36">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --cream: #FDF8F2;
-    --orange: #E88030;
-    --orange-dark: #C25A1A;
-    --orange-light: #FAE7D0;
-    --brown-deep: #1E1208;
-    --brown-mid: #6B4A2A;
-    --brown-light: #A07850;
-    --sand: #F5EDE4;
+    --bg: #F0F4FF;
+    --surface: #FFFFFF;
+    --primary: #4A6CF7;
+    --secondary: #B8C8FF;
+    --danger: #F07070;
+    --warning: #F5C26B;
+    --success: #5FBF8F;
+    --text-primary: #1A1F36;
+    --text-secondary: #6B7280;
+    --marquee-bg: #1A1F36;
+    --marquee-text: #F0F4FF;
+    --border: #E2E8F0;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+    --font-display: 'Fraunces', serif;
   }
 
-  html { scroll-behavior: smooth; }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    overscroll-behavior: none;
+  }
 
-  body {
-    font-family: 'Nunito Sans', sans-serif;
-    background: var(--cream);
-    color: var(--brown-deep);
+  #app {
+    max-width: 430px;
+    margin: 0 auto;
     min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── Blobs ── */
-  .blob {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.30;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .blob-1 { width: 500px; height: 500px; background: #F5C07A; top: -140px; right: -100px; }
-  .blob-2 { width: 340px; height: 340px; background: #F7A96B; bottom: 80px; left: -80px; }
-  .blob-3 { width: 240px; height: 240px; background: #FBD9A5; top: 55%; left: 38%; }
-
-  /* ── Nav ── */
-  nav {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    z-index: 20;
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-bar {
+    background: var(--marquee-bg);
+    color: var(--marquee-text);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .marquee-inner {
+    display: inline-block;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-inner span { margin: 0 40px; }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    gap: 3px;
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    transition: color 0.15s;
+  }
+  .nav-btn.active { color: var(--primary); }
+  .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+  /* ── SCROLL CONTENT ── */
+  .view-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin: 0 16px 12px;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 20px 16px 12px;
+  }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .badge-safe { background: #DFFAEE; color: var(--success); }
+  .badge-warning { background: #FEF9EC; color: #C69A00; }
+  .badge-danger { background: #FEECEC; color: var(--danger); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); opacity: 0.9; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-secondary { background: var(--secondary); color: var(--primary); }
+  .btn-danger { background: #FEECEC; color: var(--danger); }
+  .btn-full { width: 100%; }
+
+  /* ── INPUT ── */
+  .input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-primary);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input:focus { border-color: var(--primary); }
+
+  .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group { margin-bottom: 18px; }
+
+  /* ── BUTTON GROUP SELECT ── */
+  .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn-group-item {
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-group-item.selected {
+    border-color: var(--primary);
+    background: #EEF1FF;
+    color: var(--primary);
+  }
+
+  /* ── TOGGLE ── */
+  .toggle-wrap { display: flex; align-items: center; gap: 12px; }
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    left: 3px; top: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--primary); }
+  .toggle input:checked + .toggle-slider::after { transform: translateX(18px); }
+
+  /* ── ONBOARDING ── */
+  #onboarding {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .onboard-header {
+    padding: 48px 24px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .onboard-logo {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .onboard-tagline {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .progress-bar-wrap {
+    display: flex;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .progress-seg {
+    height: 4px;
+    flex: 1;
+    border-radius: 100px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .progress-seg.active { background: var(--primary); }
+  .onboard-body { padding: 24px; flex: 1; }
+  .onboard-step-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .onboard-step-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+  }
+
+  /* ── SUBJECT ROW IN ONBOARDING ── */
+  .subject-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .subject-row-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .subject-row-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .subject-add-form {
+    background: #F8FAFF;
+    border: 1.5px dashed var(--secondary);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 12px;
+  }
+
+  /* ── DAY CHECKBOX ── */
+  .day-checks { display: flex; gap: 6px; flex-wrap: wrap; }
+  .day-check-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .day-check-label input { display: none; }
+  .day-check-label.checked { border-color: var(--primary); background: #EEF1FF; color: var(--primary); }
+
+  /* ── MAIN APP ── */
+  #main-app { display: none; flex-direction: column; min-height: 100vh; }
+
+  /* ── DASHBOARD ── */
+  .dash-greeting {
+    padding: 20px 16px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .dash-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .dash-roast {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin: 4px 16px 0;
+    line-height: 1.4;
+  }
+  .dash-big-pct {
+    text-align: center;
+    padding: 28px 16px 8px;
+  }
+  .dash-pct-num {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .dash-pct-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── TODAY CLASSES ── */
+  .today-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin: 0 16px 10px;
+    overflow: hidden;
+  }
+  .today-card-header {
+    padding: 14px 16px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.4rem 3rem;
-    max-width: 1100px;
-    margin: 0 auto;
   }
-
-  .logo {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.7rem;
-    font-weight: 900;
-    color: var(--orange-dark);
-    letter-spacing: -0.5px;
-    text-decoration: none;
-  }
-  .logo span { color: var(--orange); }
-
-  .nav-links {
+  .today-card-name { font-weight: 700; font-size: 16px; }
+  .today-card-pct { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+  .today-card-actions {
     display: flex;
-    gap: 2.2rem;
-    list-style: none;
-    align-items: center;
+    border-top: 1px solid var(--border);
   }
-  .nav-links a {
-    text-decoration: none;
-    font-size: 0.93rem;
-    font-weight: 600;
-    color: var(--brown-mid);
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--orange-dark); }
-
-  .btn-nav {
-    background: var(--orange);
-    color: #fff !important;
-    padding: 0.52rem 1.3rem;
-    border-radius: 999px;
-    transition: background 0.2s !important;
-    box-shadow: 0 3px 14px rgba(232,128,48,0.28);
-  }
-  .btn-nav:hover { background: var(--orange-dark) !important; }
-
-  /* ── Hero ── */
-  .hero {
-    position: relative;
-    z-index: 5;
-    text-align: center;
-    padding: 5.5rem 1.5rem 2.5rem;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-
-  .eyebrow {
-    display: inline-block;
-    font-size: 0.77rem;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--orange-dark);
-    background: var(--orange-light);
-    padding: 0.38rem 1.1rem;
-    border-radius: 999px;
-    margin-bottom: 1.6rem;
-  }
-
-  h1 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(2.6rem, 5.5vw, 4rem);
-    font-weight: 900;
-    line-height: 1.15;
-    color: var(--brown-deep);
-    margin-bottom: 1.3rem;
-    letter-spacing: -1px;
-  }
-
-  h1 em {
-    font-style: normal;
-    color: var(--orange);
-    position: relative;
-    display: inline-block;
-  }
-  h1 em::after {
-    content: '';
-    position: absolute;
-    bottom: 3px;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: #F5C07A;
-    border-radius: 2px;
-    z-index: -1;
-  }
-
-  .subtitle {
-    font-size: 1.13rem;
-    line-height: 1.75;
-    color: var(--brown-mid);
-    max-width: 540px;
-    margin: 0 auto 2.6rem;
-  }
-
-  .hero-actions {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-
-  .btn-primary {
-    background: var(--orange);
-    color: #fff;
+  .log-btn {
+    flex: 1;
+    padding: 12px 6px;
     border: none;
-    padding: 0.9rem 2.2rem;
-    border-radius: 999px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    box-shadow: 0 5px 24px rgba(232, 128, 48, 0.32);
-    text-decoration: none;
-    display: inline-block;
-  }
-  .btn-primary:hover { background: var(--orange-dark); transform: translateY(-2px); }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--brown-mid);
-    border: 1.5px solid #D4A070;
-    padding: 0.9rem 1.9rem;
-    border-radius: 999px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.05rem;
+    background: none;
+    font-family: var(--font-body);
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-block;
+    transition: background 0.15s;
+    color: var(--text-secondary);
   }
-  .btn-secondary:hover { background: var(--orange-light); border-color: var(--orange-dark); color: var(--orange-dark); }
+  .log-btn:not(:last-child) { border-right: 1px solid var(--border); }
+  .log-btn.active-present { background: #DFFAEE; color: var(--success); }
+  .log-btn.active-absent { background: #FEECEC; color: var(--danger); }
+  .log-btn.active-cancelled { background: #FEF9EC; color: #C69A00; }
+  .log-btn:active { opacity: 0.7; }
 
-  .trust-line {
-    font-size: 0.82rem;
-    color: var(--brown-light);
-    margin-top: 0.7rem;
-  }
-  .trust-line span { margin: 0 0.4rem; opacity: 0.4; }
-
-  /* ── Demo Card ── */
-  .demo-wrap {
-    position: relative;
-    z-index: 5;
-    max-width: 720px;
-    margin: 3rem auto 0;
-    padding: 0 1.5rem;
-  }
-
-  .demo-card {
-    background: rgba(255,255,255,0.78);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1.5px solid rgba(210,150,90,0.22);
-    border-radius: 22px;
-    padding: 2rem 2.2rem;
-    box-shadow: 0 10px 50px rgba(180,100,30,0.09);
-  }
-
-  .demo-label {
-    font-size: 0.74rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--brown-light);
-    margin-bottom: 1.2rem;
-  }
-
-  .before-after {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 0.8rem;
-    align-items: center;
-  }
-
-  .ba-block {
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-  }
-  .ba-block.before {
-    background: #F5EDE4;
-    border: 1px solid #E0C4A0;
-  }
-  .ba-block.after {
-    background: #FFF5E8;
-    border: 1.5px solid var(--orange);
-  }
-
-  .ba-tag {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.55rem;
-    display: block;
-  }
-  .before .ba-tag { color: #B07040; }
-  .after .ba-tag { color: var(--orange-dark); }
-
-  .ba-text {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #4A3020;
-  }
-
-  .ba-arrow {
-    font-size: 1.5rem;
-    color: var(--orange);
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  /* ── How it works ── */
-  .section {
-    position: relative;
-    z-index: 5;
-    max-width: 800px;
-    margin: 5rem auto 0;
-    padding: 0 1.5rem;
-    text-align: center;
-  }
-
-  .section-label {
-    font-size: 0.77rem;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: var(--orange-dark);
-    margin-bottom: 0.7rem;
-    display: block;
-  }
-
-  h2 {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
-    font-weight: 800;
-    color: var(--brown-deep);
-    margin-bottom: 0.7rem;
-    letter-spacing: -0.5px;
-  }
-
-  .section-sub {
-    font-size: 1rem;
-    color: var(--brown-mid);
-    max-width: 460px;
-    margin: 0 auto 2.5rem;
-    line-height: 1.65;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.3rem;
-    margin-top: 1rem;
-  }
-
-  .step-card {
-    background: rgba(255,255,255,0.72);
-    border: 1px solid rgba(200,140,80,0.18);
-    border-radius: 18px;
-    padding: 1.6rem 1.3rem;
-    text-align: center;
-    backdrop-filter: blur(10px);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(180,100,30,0.1); }
-
-  .step-num {
-    width: 40px;
-    height: 40px;
-    background: var(--orange-light);
-    color: var(--orange-dark);
-    border-radius: 50%;
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.1rem;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-  }
-
-  .step-title {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--brown-deep);
-    margin-bottom: 0.45rem;
-  }
-
-  .step-desc {
-    font-size: 0.85rem;
-    color: var(--brown-mid);
-    line-height: 1.6;
-  }
-
-  /* ── Subjects ── */
-  .subjects-section {
-    position: relative;
-    z-index: 5;
-    max-width: 800px;
-    margin: 5rem auto 0;
-    padding: 0 1.5rem;
-    text-align: center;
-  }
-
-  .subjects-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    justify-content: center;
-    margin-top: 1.5rem;
-  }
-
-  .subject-pill {
-    background: rgba(255,255,255,0.75);
-    border: 1px solid rgba(200,140,80,0.25);
-    border-radius: 999px;
-    padding: 0.5rem 1.2rem;
-    font-size: 0.88rem;
+  .summary-line {
+    font-size: 13px;
     font-weight: 600;
-    color: var(--brown-mid);
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 4px 16px 16px;
+  }
+
+  /* ── SUBJECTS VIEW ── */
+  .subject-card {
     cursor: pointer;
-    transition: all 0.18s;
-    backdrop-filter: blur(6px);
+    transition: border-color 0.15s;
   }
-  .subject-pill:hover, .subject-pill.active {
-    background: var(--orange-light);
-    border-color: var(--orange);
-    color: var(--orange-dark);
+  .subject-card.expanded { border-color: var(--primary); }
+  .subject-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .subject-card-name { font-weight: 700; font-size: 16px; }
+  .subject-card-pct {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
   }
+  .subject-card-counts {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .subject-card-expand { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
+  .expand-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+  .expand-label { color: var(--text-secondary); font-weight: 500; }
+  .expand-val { font-weight: 700; }
+  .log-history { margin-top: 10px; }
+  .log-dot-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .log-dot {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .log-dot-P { background: #DFFAEE; color: var(--success); }
+  .log-dot-A { background: #FEECEC; color: var(--danger); }
+  .log-dot-C { background: #FEF9EC; color: #C69A00; }
 
-  /* ── CTA ── */
-  .cta-section {
-    position: relative;
-    z-index: 5;
-    max-width: 680px;
-    margin: 5.5rem auto 0;
-    padding: 0 1.5rem 6rem;
+  /* ── CALENDAR ── */
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 8px;
+  }
+  .cal-nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 34px; height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-primary);
+  }
+  .cal-month-label {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .cal-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 0 16px;
+    gap: 2px;
+  }
+  .cal-day-label {
     text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    padding: 4px 0;
   }
-
-  .cta-card {
-    background: linear-gradient(135deg, #FFF0E0 0%, #FDE8CC 100%);
-    border: 1.5px solid rgba(232,128,48,0.22);
-    border-radius: 24px;
-    padding: 3rem 2.5rem;
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    padding: 6px 16px 12px;
   }
-
-  .cta-card h2 { margin-bottom: 0.8rem; }
-
-  .cta-card p {
-    font-size: 1rem;
-    color: var(--brown-mid);
-    margin-bottom: 2rem;
-    line-height: 1.65;
-  }
-
-  /* ── Footer ── */
-  footer {
+  .cal-cell {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: border-color 0.15s;
     position: relative;
-    z-index: 5;
-    text-align: center;
-    padding: 1.5rem;
-    font-size: 0.82rem;
-    color: var(--brown-light);
-    border-top: 1px solid rgba(200,140,80,0.15);
+  }
+  .cal-cell.empty { cursor: default; }
+  .cal-cell.today-cell { border-color: var(--primary); }
+  .cal-cell.has-classes-good { background: #DFFAEE; color: var(--success); }
+  .cal-cell.has-classes-warn { background: #FEF9EC; color: #C69A00; }
+  .cal-cell.has-classes-bad { background: #FEECEC; color: var(--danger); }
+  .cal-cell.no-classes { background: var(--surface); color: var(--text-secondary); }
+  .cal-cell.future { background: transparent; color: var(--text-secondary); opacity: 0.5; }
+  .cal-day-detail {
+    margin: 0 16px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .streak-banner {
+    margin: 8px 16px 0;
+    background: var(--text-primary);
+    color: var(--bg);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
-  /* ── Responsive ── */
-  @media (max-width: 600px) {
-    nav { padding: 1.2rem 1.4rem; }
-    .nav-links li:not(:last-child) { display: none; }
-    .before-after { grid-template-columns: 1fr; }
-    .ba-arrow { display: none; }
+  /* ── BUNK PLANNER ── */
+  .planner-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin: 0 16px 10px;
+    overflow: hidden;
+  }
+  .planner-day-header {
+    background: var(--bg);
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .planner-class-row {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+  }
+  .planner-class-name { font-weight: 600; font-size: 15px; }
+  .planner-class-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .skip-tag {
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+  }
+  .skip-safe { background: #DFFAEE; color: var(--success); }
+  .skip-risky { background: #FEF9EC; color: #C69A00; }
+  .skip-no { background: #FEECEC; color: var(--danger); }
+  .skip-planning { background: var(--text-primary); color: var(--bg); }
+
+  /* ── SETTINGS ── */
+  .reset-zone { margin: 24px 16px 8px; }
+  .share-card-box {
+    margin: 0 16px;
+    background: var(--text-primary);
+    border-radius: 16px;
+    padding: 24px;
+    color: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .share-card-pct {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .share-card-roast {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 14px;
+    opacity: 0.7;
+    margin-bottom: 16px;
+  }
+  .share-card-name { font-weight: 700; font-size: 16px; }
+  .share-card-brand {
+    position: absolute;
+    bottom: 16px; right: 20px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--primary);
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .empty-state-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,31,54,0.5);
+    z-index: 200;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 24px;
+    width: 100%;
+    max-width: 430px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 100px;
+    margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  /* ── UTILITY ── */
+  .text-success { color: var(--success); }
+  .text-warning { color: #C69A00; }
+  .text-danger { color: var(--danger); }
+  .text-secondary { color: var(--text-secondary); }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .hidden { display: none !important; }
+
+  .divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+
+  /* planner impact line */
+  .impact-line {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Edit log btns inside modal */
+  .edit-log-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .edit-log-btn.sel-P { border-color: var(--success); background: #DFFAEE; color: var(--success); }
+  .edit-log-btn.sel-A { border-color: var(--danger); background: #FEECEC; color: var(--danger); }
+  .edit-log-btn.sel-C { border-color: #C69A00; background: #FEF9EC; color: #C69A00; }
+  .edit-log-btn.sel-none { border-color: var(--border); background: none; color: var(--text-secondary); }
+
+  @media (max-width: 375px) {
+    .dash-pct-num { font-size: 60px; }
+    .subject-card-pct { font-size: 24px; }
   }
 </style>
 </head>
 <body>
+<div id="app">
 
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
-
-<!-- Nav -->
-<nav>
-  <a href="#" class="logo">nudge<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="#how">How it works</a></li>
-    <li><a href="#subjects">Subjects</a></li>
-    <li><a href="#try" class="btn-nav">Try for free</a></li>
-  </ul>
-</nav>
-
-<!-- Hero -->
-<section class="hero">
-  <span class="eyebrow">✦ Built for college students</span>
-  <h1>Stop asking AI the<br><em>wrong questions</em></h1>
-  <p class="subtitle">You know what you need to study. Nudge builds the perfect AI prompt for you — so you stop getting vague answers and start actually understanding things.</p>
-  <div class="hero-actions">
-    <a href="#try" class="btn-primary">Build my first prompt →</a>
-    <a href="#how" class="btn-secondary">See how it works</a>
-  </div>
-  <p class="trust-line">Free to use <span>·</span> No account needed <span>·</span> Works with ChatGPT, Claude & more</p>
-</section>
-
-<!-- Before / After -->
-<div class="demo-wrap">
-  <div class="demo-card">
-    <p class="demo-label">✦ See the difference</p>
-    <div class="before-after">
-      <div class="ba-block before">
-        <span class="ba-tag">😬 Without Nudge</span>
-        <p class="ba-text">"explain mitosis"</p>
+  <!-- ═══════════════════════════════ ONBOARDING ═══════════════════════════════ -->
+  <div id="onboarding">
+    <div class="onboard-header">
+      <div class="onboard-logo">nudge.</div>
+      <div class="onboard-tagline">Log karo. Chill karo.</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-seg active" id="prog0"></div>
+        <div class="progress-seg" id="prog1"></div>
       </div>
-      <div class="ba-arrow">→</div>
-      <div class="ba-block after">
-        <span class="ba-tag">✨ With Nudge</span>
-        <p class="ba-text">"Explain the 5 stages of mitosis to a second-year Biology student preparing for a multiple choice exam. Use a comparison to a cell 'photocopying itself' and end with 3 likely exam questions."</p>
+    </div>
+    <div class="onboard-body" id="onboard-body"></div>
+  </div>
+
+  <!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
+  <div id="main-app">
+    <!-- Marquee -->
+    <div class="marquee-bar">
+      <div class="marquee-inner" id="marquee-inner"></div>
+    </div>
+
+    <!-- View Container -->
+    <div class="view-content" id="view-container"></div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" onclick="switchView(0)" id="nav0">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="switchView(1)" id="nav1">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Subjects
+      </button>
+      <button class="nav-btn" onclick="switchView(2)" id="nav2">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Calendar
+      </button>
+      <button class="nav-btn" onclick="switchView(3)" id="nav3">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+        Planner
+      </button>
+      <button class="nav-btn" onclick="switchView(4)" id="nav4">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Settings
+      </button>
+    </nav>
+  </div>
+
+  <!-- ═══ MODALS ═══ -->
+  <div class="modal-overlay" id="modal-cal-day">
+    <div class="modal-sheet" id="modal-cal-day-content"></div>
+  </div>
+  <div class="modal-overlay" id="modal-add-subject">
+    <div class="modal-sheet" id="modal-add-subject-content"></div>
+  </div>
+  <div class="modal-overlay" id="modal-reset">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Sab kuch delete karein?</div>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">Yeh action undo nahi hogi. Tumhara saara data — subjects, attendance, sab — permanently delete ho jayega.</p>
+      <div style="display:flex;gap:12px;">
+        <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-reset')">Cancel</button>
+        <button class="btn btn-danger" style="flex:1" onclick="doReset()">Haan, delete karo</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- How it works -->
-<section class="section" id="how">
-  <span class="section-label">How it works</span>
-  <h2>Three steps. Better answers.</h2>
-  <p class="section-sub">No prompt engineering degree required. Nudge does the hard part.</p>
-  <div class="steps">
-    <div class="step-card">
-      <div class="step-num">1</div>
-      <p class="step-title">Pick your subject</p>
-      <p class="step-desc">Biology, Law, History, Economics — Nudge knows the context and terminology for each.</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">2</div>
-      <p class="step-title">Answer 3 quick questions</p>
-      <p class="step-desc">What's the topic? What do you need — summary, exam prep, essay help? How deep?</p>
-    </div>
-    <div class="step-card">
-      <div class="step-num">3</div>
-      <p class="step-title">Copy & paste</p>
-      <p class="step-desc">One tap. Drop your polished prompt into ChatGPT, Claude, Gemini — wherever you study.</p>
-    </div>
-  </div>
-</section>
-
-<!-- Subjects -->
-<section class="subjects-section" id="subjects">
-  <span class="section-label">Subjects</span>
-  <h2>Works for what you study</h2>
-  <p class="section-sub">Nudge has prompt logic tailored to each subject — not one-size-fits-all templates.</p>
-  <div class="subjects-grid">
-    <span class="subject-pill active">🧬 Biology</span>
-    <span class="subject-pill">⚖️ Law</span>
-    <span class="subject-pill">📉 Economics</span>
-    <span class="subject-pill">🏛️ History</span>
-    <span class="subject-pill">🔬 Chemistry</span>
-    <span class="subject-pill">📖 Literature</span>
-    <span class="subject-pill">💻 Computer Science</span>
-    <span class="subject-pill">🧠 Psychology</span>
-    <span class="subject-pill">📊 Statistics</span>
-    <span class="subject-pill">🌍 Political Science</span>
-    <span class="subject-pill">➕ More soon...</span>
-  </div>
-</section>
-
-<!-- CTA -->
-<section class="cta-section" id="try">
-  <div class="cta-card">
-    <h2>Ready to actually get answers?</h2>
-    <p>Build your first prompt in under 60 seconds. No signup, no fluff — just better studying.</p>
-    <a href="#" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 2.6rem;">Start now, it's free →</a>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer>
-  <p>nudge. &nbsp;·&nbsp; Made for students who have better things to do than re-prompt five times.</p>
-</footer>
-
 <script>
-  document.querySelectorAll('.subject-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.subject-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
+// ═══════════════════════════════════════════════════
+//  STATE & STORAGE
+// ═══════════════════════════════════════════════════
+let state = {
+  profile: null,   // name, college, city, stream, semester, startDate, endDate, threshold, condonation, strictness, commute
+  subjects: [],    // {id, name, days:[], lecturesPerWeek}
+  logs: {},        // { 'YYYY-MM-DD': { subjectId: 'P'|'A'|'C' } }
+  plannerSkips: {} // { 'YYYY-MM-DD': [subjectId,...] }
+};
+
+function saveState() { localStorage.setItem('nudge_v1', JSON.stringify(state)); }
+function loadState() {
+  const raw = localStorage.getItem('nudge_v1');
+  if (raw) { try { state = JSON.parse(raw); } catch(e) { state = { profile:null, subjects:[], logs:{}, plannerSkips:{} }; } }
+  if (!state.logs) state.logs = {};
+  if (!state.plannerSkips) state.plannerSkips = {};
+}
+
+// ═══════════════════════════════════════════════════
+//  DATE HELPERS
+// ═══════════════════════════════════════════════════
+function today() { return fmtDate(new Date()); }
+function fmtDate(d) { return d.toISOString().split('T')[0]; }
+function parseDate(s) { const [y,m,d] = s.split('-'); return new Date(+y,+m-1,+d); }
+function dayOfWeek(dateStr) { // 0=Sun,1=Mon,...
+  return parseDate(dateStr).getDay();
+}
+const DAY_MAP = { Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6, Sun:0 };
+const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function weeksBetween(start, end) {
+  const ms = parseDate(end) - parseDate(start);
+  return Math.max(1, Math.round(ms / (7*24*3600*1000)));
+}
+
+function datesInRange(start, end) {
+  const dates = [];
+  const s = parseDate(start), e = parseDate(end);
+  const cur = new Date(s);
+  while(cur <= e) { dates.push(fmtDate(cur)); cur.setDate(cur.getDate()+1); }
+  return dates;
+}
+
+// ═══════════════════════════════════════════════════
+//  CALCULATIONS
+// ═══════════════════════════════════════════════════
+function getSubjectStats(subject) {
+  const logs = state.logs;
+  let attended = 0, held = 0;
+  const allDates = state.profile ? datesInRange(state.profile.startDate, state.profile.endDate) : [];
+  const history = [];
+  for (const dateStr of allDates) {
+    if (dateStr > today()) continue;
+    const dow = parseDate(dateStr).getDay();
+    if (!subject.days.includes(dow)) continue;
+    const log = logs[dateStr]?.[subject.id];
+    if (log === 'P') { attended++; held++; history.push({date:dateStr, status:'P'}); }
+    else if (log === 'A') { held++; history.push({date:dateStr, status:'A'}); }
+    else if (log === 'C') { history.push({date:dateStr, status:'C'}); }
+    // unlogged: count as held+absent if date has passed
+    else { held++; attended--; attended = Math.max(0, attended+1); held--; }
+    // Actually only count if explicitly logged
+  }
+  // Re-do: only count explicitly logged
+  attended = 0; held = 0;
+  const histFinal = [];
+  for (const dateStr of allDates) {
+    if (dateStr > today()) continue;
+    const dow = parseDate(dateStr).getDay();
+    if (!subject.days.includes(dow)) continue;
+    const log = logs[dateStr]?.[subject.id];
+    if (log === 'P') { attended++; held++; histFinal.push({date:dateStr, status:'P'}); }
+    else if (log === 'A') { held++; histFinal.push({date:dateStr, status:'A'}); }
+    else if (log === 'C') { histFinal.push({date:dateStr, status:'C'}); }
+    // Unlogged scheduled class counts as held but not attended (absent by default)
+    else { held++; histFinal.push({date:dateStr, status:'?'}); }
+  }
+  const pct = held > 0 ? Math.round((attended/held)*100) : null;
+  const threshold = state.profile?.threshold || 75;
+  let bunkBudget = 0, recovery = 0;
+  if (held > 0) {
+    // bunk budget: how many more can be missed keeping pct >= threshold
+    // solve (attended)/(held+n) >= threshold/100 => n <= attended*100/threshold - held
+    bunkBudget = Math.max(0, Math.floor(attended * 100 / threshold - held));
+    // recovery: if below threshold, need (attended+n)/(held+n) >= threshold/100
+    // n(1-threshold/100) >= threshold/100*held - attended
+    // n >= (threshold/100*held - attended)/(1 - threshold/100)
+    if (pct !== null && pct < threshold) {
+      const t = threshold/100;
+      recovery = Math.ceil((t*held - attended)/(1-t));
+    }
+  }
+  const status = pct === null ? 'unknown' : pct >= threshold ? 'safe' : pct >= threshold - 10 ? 'warning' : 'danger';
+  return { attended, held, pct, bunkBudget, recovery, status, history: histFinal.slice(-20) };
+}
+
+function getOverallPct() {
+  if (!state.subjects.length) return null;
+  let totAtt = 0, totHeld = 0;
+  for (const s of state.subjects) {
+    const { attended, held } = getSubjectStats(s);
+    totAtt += attended; totHeld += held;
+  }
+  return totHeld > 0 ? Math.round((totAtt/totHeld)*100) : null;
+}
+
+function getOverallSummary() {
+  // Total bunk budget across all subjects (min bunk budget = limiting factor)
+  if (!state.subjects.length) return null;
+  const threshold = state.profile?.threshold || 75;
+  let totAtt = 0, totHeld = 0;
+  for (const s of state.subjects) {
+    const { attended, held } = getSubjectStats(s);
+    totAtt += attended; totHeld += held;
+  }
+  const pct = totHeld > 0 ? Math.round((totAtt/totHeld)*100) : null;
+  if (pct === null) return null;
+  if (pct >= threshold) {
+    const budget = Math.floor(totAtt * 100/threshold - totHeld);
+    return `You can skip ${budget} more class${budget===1?'':'es'} across all subjects.`;
+  } else {
+    const t = threshold/100;
+    const recovery = Math.ceil((t*totHeld - totAtt)/(1-t));
+    return `Attend ${recovery} more class${recovery===1?'':'es'} to reach ${threshold}%.`;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  ROAST MESSAGES
+// ═══════════════════════════════════════════════════
+const ROASTS = {
+  '90-100': [
+    "Your professor knows your name, your face, and probably your dad's number too.",
+    "First bench energy. We respect it, we fear it."
+  ],
+  '75-89': [
+    "Safe. But don't get cocky, one sick week and you're cooked.",
+    "Attendance is fine. Life choices, debatable."
+  ],
+  '65-74': [
+    "Yaar, seriously. One more absence and the college calls home.",
+    "You're not failing, you're just aggressively testing the system."
+  ],
+  '50-64': [
+    "Your professor has genuinely forgotten what you look like.",
+    "At this point your seat knows you better than your teacher does."
+  ],
+  'below50': [
+    "You are paying fees to fund a college you have never visited.",
+    "Bhai. Just. Come. To. Class."
+  ],
+  'exact75': [
+    "One class away from disaster. Living life on hard mode, respect.",
+    "75% exactly. You planned this, didn't you."
+  ]
+};
+
+function getRoast(pct) {
+  if (pct === null) return "Data nahi hai. Log karo pehle.";
+  let bucket;
+  const threshold = state.profile?.threshold || 75;
+  if (pct === threshold && threshold === 75) bucket = 'exact75';
+  else if (pct >= 90) bucket = '90-100';
+  else if (pct >= 75) bucket = '75-89';
+  else if (pct >= 65) bucket = '65-74';
+  else if (pct >= 50) bucket = '50-64';
+  else bucket = 'below50';
+  const arr = ROASTS[bucket];
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+
+let _sessionRoast = null;
+function getSessionRoast() {
+  if (!_sessionRoast) _sessionRoast = getRoast(getOverallPct());
+  return _sessionRoast;
+}
+
+// ═══════════════════════════════════════════════════
+//  ONBOARDING
+// ═══════════════════════════════════════════════════
+let ob = { step: 0, profile: {}, subjects: [], addingSubject: false };
+
+const STREAMS = ['Engineering','Arts','Science','Commerce','Law','Medical'];
+const COMMUTES = ['Local train','College bus','City bus','Auto','Own vehicle','Don\'t commute'];
+
+function renderOnboarding() {
+  document.getElementById('onboarding').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('prog0').classList.toggle('active', ob.step >= 0);
+  document.getElementById('prog1').classList.toggle('active', ob.step >= 1);
+  if (ob.step === 0) renderStep1();
+  else renderStep2();
+}
+
+function renderStep1() {
+  const maxSem = ob.profile.stream === 'Engineering' ? 8 : 6;
+  const sems = Array.from({length: maxSem}, (_,i) => i+1);
+  const thresholds = ['75%','80%','85%','Custom'];
+  const strictness = ['Strictly enforced','Moderate','Relaxed'];
+
+  const commuteSelected = ob.profile.commute || [];
+  const semSelected = ob.profile.semester;
+  const streamSelected = ob.profile.stream;
+  const threshSelected = ob.profile.thresholdType;
+  const strictSelected = ob.profile.strictness;
+
+  document.getElementById('onboard-body').innerHTML = `
+    <div class="onboard-step-title">Pehle, apne baare mein batao</div>
+    <div class="onboard-step-sub">Yeh sab sirf tumhare liye hai. Koi nahi dekhta.</div>
+
+    <div class="form-group">
+      <label class="form-label">Apna naam batao</label>
+      <input class="input" id="ob-name" placeholder="e.g. Ananya" value="${ob.profile.name||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kaunsa college?</label>
+      <input class="input" id="ob-college" placeholder="College ka naam" value="${ob.profile.college||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kaunsa city?</label>
+      <input class="input" id="ob-city" placeholder="Mumbai, Pune, Delhi..." value="${ob.profile.city||''}">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Stream kya hai?</label>
+      <div class="btn-group" id="stream-group">
+        ${STREAMS.map(s=>`<button class="btn-group-item ${streamSelected===s?'selected':''}" onclick="selectStream('${s}')">${s}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Kaun sa semester?</label>
+      <div class="btn-group" id="sem-group">
+        ${sems.map(s=>`<button class="btn-group-item ${semSelected===s?'selected':''}" onclick="selectSem(${s})">${s}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Semester kab shuru hua?</label>
+      <input class="input" type="date" id="ob-start" value="${ob.profile.startDate||''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Semester kab khatam hoga?</label>
+      <input class="input" type="date" id="ob-end" value="${ob.profile.endDate||''}">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Kitne % attendance chahiye?</label>
+      <div class="btn-group" id="thresh-group">
+        ${thresholds.map(t=>`<button class="btn-group-item ${threshSelected===t?'selected':''}" onclick="selectThreshold('${t}')">${t}</button>`).join('')}
+      </div>
+      <div id="custom-thresh-wrap" style="margin-top:10px;display:${threshSelected==='Custom'?'block':'none'}">
+        <input class="input" type="number" id="ob-custom-thresh" min="1" max="100" placeholder="e.g. 70" value="${ob.profile.customThreshold||''}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Condonation milti hai?</label>
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="ob-condonation" ${ob.profile.condonation?'checked':''} onchange="toggleCondonation(this)">
+          <span class="toggle-slider"></span>
+        </label>
+        <span style="font-size:14px;font-weight:600">${ob.profile.condonation?'Haan':'Nahi'}</span>
+      </div>
+      <div id="condonation-pts-wrap" style="margin-top:10px;display:${ob.profile.condonation?'block':'none'}">
+        <input class="input" type="number" id="ob-condonation-pts" min="1" max="20" placeholder="Kitne % ki chhoot milti hai?" value="${ob.profile.condonationPts||''}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Attendance kitni strictly enforce hoti hai?</label>
+      <div class="btn-group">
+        ${strictness.map(s=>`<button class="btn-group-item ${strictSelected===s?'selected':''}" onclick="selectStrictness('${s}')">${s}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">College kaise jaate ho? (multiple select)</label>
+      <div class="btn-group">
+        ${COMMUTES.map(c=>`<button class="btn-group-item ${commuteSelected.includes(c)?'selected':''}" onclick="toggleCommute('${c}')">${c}</button>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <button class="btn btn-primary btn-full" onclick="step1Next()">Aage chalo</button>
+    </div>
+  `;
+}
+
+function selectStream(s) {
+  ob.profile.stream = s;
+  if (ob.profile.semester > (s==='Engineering'?8:6)) ob.profile.semester = null;
+  renderStep1();
+}
+function selectSem(n) { ob.profile.semester = n; renderStep1(); }
+function selectThreshold(t) {
+  ob.profile.thresholdType = t;
+  document.getElementById('custom-thresh-wrap').style.display = t==='Custom'?'block':'none';
+  document.querySelectorAll('#thresh-group .btn-group-item').forEach(el=>el.classList.toggle('selected', el.textContent===t));
+}
+function selectStrictness(s) {
+  ob.profile.strictness = s;
+  document.querySelectorAll('#onboard-body .btn-group').forEach(grp=>{
+    grp.querySelectorAll('.btn-group-item').forEach(el=>{
+      if(['Strictly enforced','Moderate','Relaxed'].includes(el.textContent)) el.classList.toggle('selected', el.textContent===s);
     });
   });
-</script>
+  renderStep1();
+}
+function toggleCommute(c) {
+  if (!ob.profile.commute) ob.profile.commute = [];
+  const idx = ob.profile.commute.indexOf(c);
+  if (idx>=0) ob.profile.commute.splice(idx,1); else ob.profile.commute.push(c);
+  document.querySelectorAll('#onboard-body .btn-group').forEach(grp=>{
+    grp.querySelectorAll('.btn-group-item').forEach(el=>{
+      if(COMMUTES.includes(el.textContent)) el.classList.toggle('selected', ob.profile.commute.includes(el.textContent));
+    });
+  });
+}
+function toggleCondonation(el) {
+  ob.profile.condonation = el.checked;
+  document.getElementById('condonation-pts-wrap').style.display = el.checked?'block':'none';
+  el.parentElement.nextElementSibling.textContent = el.checked?'Haan':'Nahi';
+}
 
+function step1Next() {
+  ob.profile.name = document.getElementById('ob-name').value.trim();
+  ob.profile.college = document.getElementById('ob-college').value.trim();
+  ob.profile.city = document.getElementById('ob-city').value.trim();
+  ob.profile.startDate = document.getElementById('ob-start').value;
+  ob.profile.endDate = document.getElementById('ob-end').value;
+  if (ob.profile.thresholdType === 'Custom') {
+    ob.profile.customThreshold = document.getElementById('ob-custom-thresh').value;
+  }
+  if (ob.profile.condonation) {
+    ob.profile.condonationPts = document.getElementById('ob-condonation-pts').value;
+  }
+  if (!ob.profile.name) { alert('Naam toh batao!'); return; }
+  if (!ob.profile.startDate || !ob.profile.endDate) { alert('Semester dates daalo!'); return; }
+  if (!ob.profile.thresholdType) { alert('Attendance threshold select karo!'); return; }
+  if (ob.profile.thresholdType === 'Custom' && !ob.profile.customThreshold) { alert('Custom % daalo!'); return; }
+  ob.step = 1;
+  renderOnboarding();
+}
+
+function renderStep2() {
+  let subjectsHtml = '';
+  if (ob.subjects.length) {
+    subjectsHtml = ob.subjects.map((s,i)=>`
+      <div class="subject-row">
+        <div class="subject-row-name">${s.name}</div>
+        <div class="subject-row-meta">${s.days.map(d=>DAY_LABELS[d]).join(', ')} — ${s.lecturesPerWeek} lecture${s.lecturesPerWeek>1?'s':''}/week</div>
+      </div>
+    `).join('');
+  }
+
+  const addFormHtml = ob.subjects.length < 12 ? `
+    <div class="subject-add-form">
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Subject ka naam</label>
+        <input class="input" id="ob-sub-name" placeholder="e.g. Engineering Maths">
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Kaunse din hote hain?</label>
+        <div class="day-checks" id="ob-day-checks">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`
+            <label class="day-check-label" id="dlbl-${d}">
+              <input type="checkbox" value="${DAY_MAP[d]}" onchange="updateDayCheck(this,'${d}')"> ${d}
+            </label>
+          `).join('')}
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Kitne lectures per week?</label>
+        <input class="input" type="number" id="ob-sub-lpw" min="1" max="6" placeholder="e.g. 3">
+      </div>
+      <button class="btn btn-secondary btn-full" onclick="addSubjectOb()">Subject add karo</button>
+    </div>
+  ` : '<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:12px">12 subjects ho gaye. Enough hai.</p>';
+
+  document.getElementById('onboard-body').innerHTML = `
+    <div class="onboard-step-title">Subjects add karo</div>
+    <div class="onboard-step-sub">Ek ek karke. Baad mein bhi add kar sakte ho.</div>
+    ${subjectsHtml}
+    ${addFormHtml}
+    ${ob.subjects.length > 0 ? `
+      <div style="margin-top:20px">
+        <button class="btn btn-primary btn-full" onclick="finishOnboarding()">Done. Dashboard dikhao.</button>
+      </div>
+    ` : ''}
+  `;
+}
+
+function updateDayCheck(el, day) {
+  const lbl = document.getElementById('dlbl-'+day);
+  lbl.classList.toggle('checked', el.checked);
+}
+
+function addSubjectOb() {
+  const name = document.getElementById('ob-sub-name').value.trim();
+  const checks = document.querySelectorAll('#ob-day-checks input:checked');
+  const days = Array.from(checks).map(c=>+c.value);
+  const lpw = +document.getElementById('ob-sub-lpw').value;
+  if (!name) { alert('Subject naam daalo!'); return; }
+  if (!days.length) { alert('Koi din select nahi kiya!'); return; }
+  if (!lpw || lpw < 1) { alert('Lectures per week daalo!'); return; }
+  ob.subjects.push({ id: 'sub_'+Date.now()+'_'+Math.random().toString(36).slice(2), name, days, lecturesPerWeek: lpw });
+  renderStep2();
+}
+
+function finishOnboarding() {
+  if (!ob.subjects.length) { alert('Kam se kam ek subject toh add karo!'); return; }
+  const t = ob.profile.thresholdType;
+  const threshold = t==='75%'?75:t==='80%'?80:t==='85%'?85:+ob.profile.customThreshold;
+  state.profile = {
+    name: ob.profile.name,
+    college: ob.profile.college,
+    city: ob.profile.city,
+    stream: ob.profile.stream,
+    semester: ob.profile.semester,
+    startDate: ob.profile.startDate,
+    endDate: ob.profile.endDate,
+    threshold,
+    condonation: ob.profile.condonation||false,
+    condonationPts: ob.profile.condonationPts||0,
+    strictness: ob.profile.strictness,
+    commute: ob.profile.commute||[],
+    thresholdType: t
+  };
+  state.subjects = ob.subjects;
+  saveState();
+  launchApp();
+}
+
+// ═══════════════════════════════════════════════════
+//  APP LAUNCH
+// ═══════════════════════════════════════════════════
+let currentView = 0;
+
+function launchApp() {
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  setupMarquee();
+  switchView(0);
+}
+
+function setupMarquee() {
+  const msgs = ['Log karo. Chill karo.','Hum bas count karte hain.','Aaj kitne classes hain?'];
+  const full = msgs.map(m=>`<span>${m}</span>`).join('') + msgs.map(m=>`<span>${m}</span>`).join('');
+  document.getElementById('marquee-inner').innerHTML = full;
+}
+
+function switchView(n) {
+  currentView = n;
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
+  const vc = document.getElementById('view-container');
+  vc.scrollTop = 0;
+  if (n===0) renderDashboard();
+  else if (n===1) renderSubjects();
+  else if (n===2) renderCalendar();
+  else if (n===3) renderPlanner();
+  else if (n===4) renderSettings();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW 1: DASHBOARD
+// ═══════════════════════════════════════════════════
+function renderDashboard() {
+  const vc = document.getElementById('view-container');
+  const pct = getOverallPct();
+  const pctColor = pct===null?'var(--text-secondary)':pct>=(state.profile?.threshold||75)?'var(--success)':pct>=(state.profile?.threshold||75)-10?'#C69A00':'var(--danger)';
+  const roast = getSessionRoast();
+  const todayClasses = getTodayClasses();
+  const summary = getOverallSummary();
+  const hour = new Date().getHours();
+  const greeting = hour<12?'Subah ki salamat,':hour<17?'Dopahar ka namskar,':'Shaam ki shuruaat,';
+
+  let todayHtml = '';
+  if (!state.subjects.length) {
+    todayHtml = `<div class="empty-state"><div class="empty-state-title">No subjects yet.</div>Add one, then we can talk.</div>`;
+  } else if (!todayClasses.length) {
+    todayHtml = `<div class="empty-state" style="padding:24px"><div class="empty-state-title">Aaj koi class nahi.</div>Enjoy the day. You earned it.</div>`;
+  } else {
+    todayHtml = todayClasses.map(s=>{
+      const log = state.logs[today()]?.[s.id];
+      const stats = getSubjectStats(s);
+      return `
+        <div class="today-card">
+          <div class="today-card-header">
+            <div class="today-card-name">${s.name}</div>
+            <div class="today-card-pct" style="color:${stats.pct!==null?(stats.pct>=(state.profile?.threshold||75)?'var(--success)':stats.pct>=(state.profile?.threshold||75)-10?'#C69A00':'var(--danger)'):'var(--text-secondary)'}">${stats.pct!==null?stats.pct+'%':'—'}</div>
+          </div>
+          <div class="today-card-actions">
+            <button class="log-btn ${log==='P'?'active-present':''}" onclick="logClass('${s.id}','P')">Present</button>
+            <button class="log-btn ${log==='A'?'active-absent':''}" onclick="logClass('${s.id}','A')">Absent</button>
+            <button class="log-btn ${log==='C'?'active-cancelled':''}" onclick="logClass('${s.id}','C')">Cancelled</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  vc.innerHTML = `
+    <div class="dash-greeting">${greeting}<br><span class="dash-name">${state.profile?.name||'student'}.</span></div>
+    <div class="dash-roast">${roast}</div>
+    <div class="dash-big-pct">
+      <div class="dash-pct-num" style="color:${pctColor}">${pct!==null?pct+'%':'—'}</div>
+      <div class="dash-pct-label">Overall Attendance</div>
+    </div>
+    <div class="section-title">Aaj ke classes</div>
+    ${todayHtml}
+    ${summary ? `<div class="summary-line">${summary}</div>` : ''}
+  `;
+}
+
+function getTodayClasses() {
+  const dow = parseDate(today()).getDay();
+  return state.subjects.filter(s=>s.days.includes(dow));
+}
+
+function logClass(subjectId, status) {
+  if (!state.logs[today()]) state.logs[today()] = {};
+  if (state.logs[today()][subjectId] === status) {
+    delete state.logs[today()][subjectId];
+  } else {
+    state.logs[today()][subjectId] = status;
+  }
+  saveState();
+  renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW 2: SUBJECTS
+// ═══════════════════════════════════════════════════
+let expandedSubject = null;
+
+function renderSubjects() {
+  const vc = document.getElementById('view-container');
+  if (!state.subjects.length) {
+    vc.innerHTML = `
+      <div class="section-title">Subjects</div>
+      <div class="empty-state">
+        <div class="empty-state-title">No subjects yet.</div>
+        Add one, then we can talk.
+        <div style="margin-top:16px"><button class="btn btn-primary" onclick="openAddSubjectModal()">Add subject</button></div>
+      </div>`;
+    return;
+  }
+
+  const threshold = state.profile?.threshold||75;
+  const subjectsHtml = state.subjects.map(s=>{
+    const stats = getSubjectStats(s);
+    const pctColor = stats.pct===null?'var(--text-secondary)':stats.pct>=threshold?'var(--success)':stats.pct>=threshold-10?'#C69A00':'var(--danger)';
+    const badge = stats.status==='safe'?'badge-safe':stats.status==='warning'?'badge-warning':'badge-danger';
+    const badgeLabel = stats.status==='safe'?'Safe':stats.status==='warning'?'Warning':'Danger';
+    const isExpanded = expandedSubject === s.id;
+    const recentLogs = stats.history.slice(-5).reverse();
+    const expandHtml = isExpanded ? `
+      <div class="subject-card-expand">
+        <div class="expand-row">
+          <span class="expand-label">Bunk budget</span>
+          <span class="expand-val">${stats.bunkBudget} class${stats.bunkBudget===1?'':'es'}</span>
+        </div>
+        ${stats.recovery > 0 ? `<div class="expand-row">
+          <span class="expand-label">Recovery needed</span>
+          <span class="expand-val text-danger">${stats.recovery} class${stats.recovery===1?'':'es'} in a row</span>
+        </div>` : ''}
+        <div class="expand-label" style="margin-top:8px">Last 5 classes</div>
+        <div class="log-dot-row">
+          ${recentLogs.length ? recentLogs.map(l=>`<div class="log-dot log-dot-${l.status==='?'?'A':l.status}" title="${l.date}">${l.status==='?'?'?':l.status}</div>`).join('') : '<span style="font-size:12px;color:var(--text-secondary)">No logs yet</span>'}
+        </div>
+      </div>
+    ` : '';
+
+    return `
+      <div class="card subject-card ${isExpanded?'expanded':''}" onclick="toggleSubject('${s.id}')">
+        <div class="subject-card-top">
+          <div>
+            <div class="subject-card-name">${s.name}</div>
+            <div class="subject-card-counts" style="margin-top:4px">${stats.attended} attended / ${stats.held} held</div>
+            <div style="margin-top:8px"><span class="badge ${badge}">${badgeLabel}</span></div>
+          </div>
+          <div class="subject-card-pct" style="color:${pctColor}">${stats.pct!==null?stats.pct+'%':'—'}</div>
+        </div>
+        ${expandHtml}
+      </div>
+    `;
+  }).join('');
+
+  vc.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 16px 12px">
+      <div class="section-title" style="margin:0">Subjects</div>
+      <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px" onclick="openAddSubjectModal()">Add subject</button>
+    </div>
+    ${subjectsHtml}
+  `;
+}
+
+function toggleSubject(id) {
+  expandedSubject = expandedSubject === id ? null : id;
+  renderSubjects();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW 3: CALENDAR
+// ═══════════════════════════════════════════════════
+let calDate = new Date();
+
+function renderCalendar() {
+  const vc = document.getElementById('view-container');
+  const streak = getStreak();
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  const monthLabel = calDate.toLocaleString('default',{month:'long', year:'numeric'});
+  const firstDay = new Date(year,month,1).getDay();
+  const daysInMonth = new Date(year,month+1,0).getDate();
+  const todayStr = today();
+
+  let cells = '';
+  for(let i=0;i<firstDay;i++) cells+=`<div class="cal-cell empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isFuture = ds > todayStr;
+    const isToday = ds === todayStr;
+    const dow = parseDate(ds).getDay();
+    const scheduledSubs = state.subjects.filter(s=>s.days.includes(dow));
+    let cls='cal-cell';
+    if(isFuture) cls+=' future';
+    else if(!scheduledSubs.length) cls+=' no-classes';
+    else {
+      const logs = state.logs[ds]||{};
+      const attended = scheduledSubs.filter(s=>logs[s.id]==='P').length;
+      const cancelled = scheduledSubs.filter(s=>logs[s.id]==='C').length;
+      const held = scheduledSubs.length - cancelled;
+      const pct = held>0?attended/held:1;
+      cls += pct>=0.75?' has-classes-good':pct>=0.5?' has-classes-warn':' has-classes-bad';
+    }
+    if(isToday) cls+=' today-cell';
+    cells += `<div class="${cls}" onclick="openCalDay('${ds}')">${d}</div>`;
+  }
+
+  vc.innerHTML = `
+    ${streak>0?`<div class="streak-banner"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>${streak} class streak. Don't blow it.</div>`:''}
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="calNav(-1)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="cal-month-label">${monthLabel}</div>
+      <button class="cal-nav-btn" onclick="calNav(1)">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="cal-grid-header">
+      ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-day-label">${d}</div>`).join('')}
+    </div>
+    <div class="cal-grid">${cells}</div>
+    <div id="cal-day-detail"></div>
+  `;
+}
+
+function calNav(dir) {
+  calDate = new Date(calDate.getFullYear(), calDate.getMonth()+dir, 1);
+  renderCalendar();
+}
+
+function getStreak() {
+  let streak = 0;
+  const cur = new Date();
+  cur.setDate(cur.getDate()-1);
+  while(true) {
+    const ds = fmtDate(cur);
+    const dow = cur.getDay();
+    const scheduled = state.subjects.filter(s=>s.days.includes(dow));
+    if(!scheduled.length) { cur.setDate(cur.getDate()-1); if(streak>20) break; continue; }
+    const logs = state.logs[ds]||{};
+    const allPresent = scheduled.every(s=>logs[s.id]==='P'||logs[s.id]==='C');
+    if(!allPresent) break;
+    streak++;
+    cur.setDate(cur.getDate()-1);
+    if(streak>60) break;
+  }
+  return streak;
+}
+
+function openCalDay(ds) {
+  const dow = parseDate(ds).getDay();
+  const scheduled = state.subjects.filter(s=>s.days.includes(dow));
+  const logs = state.logs[ds]||{};
+  const isFuture = ds > today();
+  const dateLabel = parseDate(ds).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+
+  const subjectRows = scheduled.length ? scheduled.map(s=>{
+    const log = logs[s.id];
+    return `
+      <div style="margin-bottom:14px">
+        <div style="font-weight:700;font-size:15px;margin-bottom:8px">${s.name}</div>
+        <div style="display:flex;gap:8px">
+          <button class="edit-log-btn ${log==='P'?'sel-P':''}" onclick="editLog('${ds}','${s.id}','P')">Present</button>
+          <button class="edit-log-btn ${log==='A'?'sel-A':''}" onclick="editLog('${ds}','${s.id}','A')">Absent</button>
+          <button class="edit-log-btn ${log==='C'?'sel-C':''}" onclick="editLog('${ds}','${s.id}','C')">Cancelled</button>
+          <button class="edit-log-btn ${!log?'sel-none':''}" onclick="editLog('${ds}','${s.id}',null)">Clear</button>
+        </div>
+      </div>
+    `;
+  }).join('') : '<p style="color:var(--text-secondary);font-size:14px">Is din koi class nahi thi.</p>';
+
+  const content = document.getElementById('modal-cal-day-content');
+  content.innerHTML = `
+    <div class="modal-handle"></div>
+    <div class="modal-title">${dateLabel}</div>
+    ${isFuture?'<p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Future date — log nahi kar sakte abhi.</p>':''}
+    ${!isFuture?subjectRows:scheduled.map(s=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);font-weight:600">${s.name}</div>`).join('')}
+    <div style="margin-top:16px"><button class="btn btn-secondary btn-full" onclick="closeModal('modal-cal-day')">Close</button></div>
+  `;
+  document.getElementById('modal-cal-day').classList.add('open');
+}
+
+function editLog(ds, subjectId, status) {
+  if (!state.logs[ds]) state.logs[ds] = {};
+  if (status===null) delete state.logs[ds][subjectId];
+  else state.logs[ds][subjectId] = status;
+  saveState();
+  openCalDay(ds);
+  if(currentView===0) renderDashboard();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW 4: BUNK PLANNER
+// ═══════════════════════════════════════════════════
+function renderPlanner() {
+  const vc = document.getElementById('view-container');
+  const threshold = state.profile?.threshold || 75;
+  const next7 = [];
+  const cur = new Date();
+  for(let i=0;i<7;i++){
+    const d = new Date(cur);
+    d.setDate(cur.getDate()+i);
+    next7.push(fmtDate(d));
+  }
+
+  let html = `<div class="section-title">Bunk Planner</div>`;
+
+  for(const ds of next7){
+    const dow = parseDate(ds).getDay();
+    const classes = state.subjects.filter(s=>s.days.includes(dow));
+    if(!classes.length) continue;
+    const dayLabel = parseDate(ds).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'});
+    const skips = state.plannerSkips[ds]||[];
+
+    const rows = classes.map(s=>{
+      const stats = getSubjectStats(s);
+      const isSkipping = skips.includes(s.id);
+      // Calculate impact of skipping
+      let tag, tagCls;
+      if(isSkipping) { tag='Planning to skip'; tagCls='skip-planning'; }
+      else if(stats.bunkBudget > 2) { tag='Safe'; tagCls='skip-safe'; }
+      else if(stats.bunkBudget > 0) { tag='Risky'; tagCls='skip-risky'; }
+      else { tag='Cannot skip'; tagCls='skip-no'; }
+
+      // Impact if skipping this one more
+      let impactStr = '';
+      if(!isSkipping && stats.pct!==null) {
+        const newPct = stats.held>0?Math.round((stats.attended/(stats.held+1))*100):0;
+        const diff = newPct - (stats.pct||0);
+        impactStr = `Skipping drops ${s.name} to ${newPct}% (${diff}%)`;
+      }
+
+      return `
+        <div class="planner-class-row" onclick="togglePlannerSkip('${ds}','${s.id}')">
+          <div>
+            <div class="planner-class-name">${s.name}</div>
+            <div class="planner-class-sub">${stats.pct!==null?stats.pct+'% now':'No data'} · Budget: ${stats.bunkBudget}</div>
+          </div>
+          <button class="skip-tag ${tagCls}" onclick="event.stopPropagation();togglePlannerSkip('${ds}','${s.id}')">${tag}</button>
+        </div>
+        ${impactStr?`<div class="impact-line">${impactStr}</div>`:''}
+      `;
+    }).join('');
+
+    html += `
+      <div class="planner-card">
+        <div class="planner-day-header">${dayLabel}</div>
+        ${rows}
+      </div>
+    `;
+  }
+
+  if(html === `<div class="section-title">Bunk Planner</div>`) {
+    html += `<div class="empty-state"><div class="empty-state-title">Agle 7 din mein koi class nahi.</div>Lucky you.</div>`;
+  }
+
+  vc.innerHTML = html;
+}
+
+function togglePlannerSkip(ds, subjectId) {
+  if(!state.plannerSkips[ds]) state.plannerSkips[ds]=[];
+  const idx = state.plannerSkips[ds].indexOf(subjectId);
+  if(idx>=0) state.plannerSkips[ds].splice(idx,1);
+  else state.plannerSkips[ds].push(subjectId);
+  saveState();
+  renderPlanner();
+}
+
+// ═══════════════════════════════════════════════════
+//  VIEW 5: SETTINGS
+// ═══════════════════════════════════════════════════
+function renderSettings() {
+  const vc = document.getElementById('view-container');
+  const p = state.profile||{};
+  const overallPct = getOverallPct();
+  const roast = getSessionRoast();
+
+  vc.innerHTML = `
+    <div class="section-title">Settings</div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:700;font-size:16px;margin-bottom:16px">Profile</div>
+      <div class="form-group">
+        <label class="form-label">Naam</label>
+        <input class="input" id="set-name" value="${p.name||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">College</label>
+        <input class="input" id="set-college" value="${p.college||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input class="input" id="set-city" value="${p.city||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Attendance Threshold (%)</label>
+        <input class="input" type="number" id="set-threshold" value="${p.threshold||75}" min="1" max="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Semester start</label>
+        <input class="input" type="date" id="set-start" value="${p.startDate||''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Semester end</label>
+        <input class="input" type="date" id="set-end" value="${p.endDate||''}">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveSettings()">Save karo</button>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Shareable Card</div>
+    <div class="share-card-box" id="share-card">
+      <div class="share-card-pct" style="color:${overallPct!==null?(overallPct>=(p.threshold||75)?'var(--success)':overallPct>=(p.threshold||75)-10?'#C69A00':'var(--danger)'):'var(--bg)'}">${overallPct!==null?overallPct+'%':'—'}</div>
+      <div class="share-card-roast">${roast}</div>
+      <div class="share-card-name">${p.name||'Student'} · ${p.college||'College'}</div>
+      <div class="share-card-brand">nudge.</div>
+    </div>
+    <div style="margin:12px 16px 0">
+      <button class="btn btn-secondary btn-full" onclick="screenshotCard()">Screenshot banao</button>
+    </div>
+
+    <div class="reset-zone">
+      <button class="btn btn-danger btn-full" onclick="openModal('modal-reset')">Sab kuch reset karo</button>
+    </div>
+    <div style="height:8px"></div>
+  `;
+}
+
+function saveSettings() {
+  state.profile.name = document.getElementById('set-name').value.trim();
+  state.profile.college = document.getElementById('set-college').value.trim();
+  state.profile.city = document.getElementById('set-city').value.trim();
+  state.profile.threshold = +document.getElementById('set-threshold').value;
+  state.profile.startDate = document.getElementById('set-start').value;
+  state.profile.endDate = document.getElementById('set-end').value;
+  saveState();
+  _sessionRoast = null;
+  renderSettings();
+  alert('Saved. Keep it up.');
+}
+
+function screenshotCard() {
+  alert('Screenshot lene ke liye apne phone ka screenshot button use karo. Card dikhane wala hai screenshot ke liye.');
+}
+
+function doReset() {
+  localStorage.removeItem('nudge_v1');
+  location.reload();
+}
+
+// ═══════════════════════════════════════════════════
+//  ADD SUBJECT MODAL (post-onboarding)
+// ═══════════════════════════════════════════════════
+function openAddSubjectModal() {
+  const content = document.getElementById('modal-add-subject-content');
+  content.innerHTML = `
+    <div class="modal-handle"></div>
+    <div class="modal-title">Naya subject add karo</div>
+    <div class="form-group">
+      <label class="form-label">Subject ka naam</label>
+      <input class="input" id="ms-name" placeholder="e.g. Microeconomics">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Kaunse din?</label>
+      <div class="day-checks" id="ms-days">
+        ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`
+          <label class="day-check-label" id="msdlbl-${d}">
+            <input type="checkbox" value="${DAY_MAP[d]}" onchange="msUpdateDay(this,'${d}')"> ${d}
+          </label>
+        `).join('')}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Lectures per week</label>
+      <input class="input" type="number" id="ms-lpw" min="1" max="6" placeholder="e.g. 3">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:4px">
+      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-add-subject')">Cancel</button>
+      <button class="btn btn-primary" style="flex:1" onclick="doAddSubject()">Add karo</button>
+    </div>
+  `;
+  openModal('modal-add-subject');
+}
+
+function msUpdateDay(el, day) {
+  document.getElementById('msdlbl-'+day).classList.toggle('checked', el.checked);
+}
+
+function doAddSubject() {
+  const name = document.getElementById('ms-name').value.trim();
+  const checks = document.querySelectorAll('#ms-days input:checked');
+  const days = Array.from(checks).map(c=>+c.value);
+  const lpw = +document.getElementById('ms-lpw').value;
+  if(!name||!days.length||!lpw) { alert('Saari info daalo!'); return; }
+  state.subjects.push({ id:'sub_'+Date.now(), name, days, lecturesPerWeek:lpw });
+  saveState();
+  closeModal('modal-add-subject');
+  if(currentView===0) renderDashboard();
+  else if(currentView===1) renderSubjects();
+}
+
+// ═══════════════════════════════════════════════════
+//  MODAL HELPERS
+// ═══════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+loadState();
+if(state.profile && state.subjects.length) {
+  launchApp();
+} else {
+  document.getElementById('onboarding').style.display = 'flex';
+  renderStep1();
+}
+
+// ── PWA SERVICE WORKER ──
+if('serviceWorker' in navigator) {
+  const swCode = `
+    const CACHE='nudge-v1';
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/']))));
+    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+  `;
+  const blob = new Blob([swCode],{type:'application/javascript'});
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+// ── MANIFEST ──
+const manifest = {
+  name:'nudge.',
+  short_name:'nudge',
+  start_url:'.',
+  display:'standalone',
+  background_color:'#F0F4FF',
+  theme_color:'#1A1F36',
+  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%234A6CF7"/><text y=".9em" font-size="80" x="10">n</text></svg>',sizes:'any',type:'image/svg+xml'}]
+};
+const mblob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
+document.getElementById('manifest-link').href = URL.createObjectURL(mblob);
+</script>
 </body>
 </html>
