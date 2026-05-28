@@ -1,1767 +1,550 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>nudge.</title>
-<link rel="manifest" href="#" id="manifest-link">
-<meta name="theme-color" content="#1A1F36">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>nudge. — Setup</title>
+  <meta name="theme-color" content="#1A1F36">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="shared.css">
+  <style>
+    /* ── Onboarding-specific styles ── */
+    body { background: var(--bg); }
 
-  :root {
-    --bg: #F0F4FF;
-    --surface: #FFFFFF;
-    --primary: #4A6CF7;
-    --secondary: #B8C8FF;
-    --danger: #F07070;
-    --warning: #F5C26B;
-    --success: #5FBF8F;
-    --text-primary: #1A1F36;
-    --text-secondary: #6B7280;
-    --marquee-bg: #1A1F36;
-    --marquee-text: #F0F4FF;
-    --border: #E2E8F0;
-    --font-body: 'Plus Jakarta Sans', sans-serif;
-    --font-display: 'Fraunces', serif;
-  }
+    .ob-shell {
+      max-width: var(--app-width);
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.5;
-    overscroll-behavior: none;
-  }
+    /* sticky header */
+    .ob-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 24px 20px;
+    }
+    .ob-logo {
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+    .ob-tagline {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
 
-  #app {
-    max-width: 430px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
+    /* progress pills */
+    .progress-bar {
+      display: flex;
+      gap: 6px;
+    }
+    .prog-seg {
+      height: 4px;
+      flex: 1;
+      border-radius: 100px;
+      background: var(--border);
+      transition: background 0.35s;
+    }
+    .prog-seg.done { background: var(--primary); }
 
-  /* ── MARQUEE ── */
-  .marquee-bar {
-    background: var(--marquee-bg);
-    color: var(--marquee-text);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 0;
-    overflow: hidden;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .marquee-inner {
-    display: inline-block;
-    animation: marquee 22s linear infinite;
-  }
-  .marquee-inner span { margin: 0 40px; }
-  @keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+    /* body */
+    .ob-body { padding: 28px 24px 48px; flex: 1; }
 
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 430px;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    z-index: 100;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .nav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 4px 8px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    gap: 3px;
-    color: var(--text-secondary);
-    font-family: var(--font-body);
-    font-size: 10px;
-    font-weight: 500;
-    transition: color 0.15s;
-  }
-  .nav-btn.active { color: var(--primary); }
-  .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .ob-step-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .ob-step-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
 
-  /* ── SCROLL CONTENT ── */
-  .view-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-bottom: 80px;
-    -webkit-overflow-scrolling: touch;
-  }
+    /* subject rows in step 2 */
+    .subject-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .subject-row-name  { font-weight: 700; font-size: 15px; }
+    .subject-row-meta  { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .subject-row-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 4px;
+      border-radius: 6px;
+      display: flex;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .subject-row-del:hover { color: var(--danger); }
 
-  /* ── CARDS ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
-    margin: 0 16px 12px;
-  }
+    /* add-subject form panel */
+    .add-subject-panel {
+      background: #F8FAFF;
+      border: 1.5px dashed var(--secondary);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 12px;
+    }
+    .add-subject-panel.collapsed { display: none; }
 
-  /* ── SECTION TITLE ── */
-  .section-title {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 20px 16px 12px;
-  }
+    .panel-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px;
+      border: 1.5px dashed var(--secondary);
+      border-radius: 12px;
+      background: #F8FAFF;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.15s;
+    }
+    .panel-toggle:hover { background: #EEF1FF; }
 
-  /* ── BADGES ── */
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .badge-safe { background: #DFFAEE; color: var(--success); }
-  .badge-warning { background: #FEF9EC; color: #C69A00; }
-  .badge-danger { background: #FEECEC; color: var(--danger); }
+    /* bottom CTA */
+    .ob-footer {
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, var(--bg) 70%, transparent);
+      padding: 16px 24px 28px;
+    }
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
-  }
-  .btn:active { transform: scale(0.97); opacity: 0.9; }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-secondary { background: var(--secondary); color: var(--primary); }
-  .btn-danger { background: #FEECEC; color: var(--danger); }
-  .btn-full { width: 100%; }
-
-  /* ── INPUT ── */
-  .input {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 15px;
-    color: var(--text-primary);
-    background: var(--surface);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .input:focus { border-color: var(--primary); }
-
-  .form-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-    display: block;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .form-group { margin-bottom: 18px; }
-
-  /* ── BUTTON GROUP SELECT ── */
-  .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
-  .btn-group-item {
-    padding: 8px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-group-item.selected {
-    border-color: var(--primary);
-    background: #EEF1FF;
-    color: var(--primary);
-  }
-
-  /* ── TOGGLE ── */
-  .toggle-wrap { display: flex; align-items: center; gap: 12px; }
-  .toggle {
-    position: relative;
-    width: 44px;
-    height: 26px;
-    flex-shrink: 0;
-  }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .toggle-slider {
-    position: absolute;
-    inset: 0;
-    background: var(--border);
-    border-radius: 100px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .toggle-slider::after {
-    content: '';
-    position: absolute;
-    width: 20px; height: 20px;
-    left: 3px; top: 3px;
-    background: #fff;
-    border-radius: 50%;
-    transition: transform 0.2s;
-  }
-  .toggle input:checked + .toggle-slider { background: var(--primary); }
-  .toggle input:checked + .toggle-slider::after { transform: translateX(18px); }
-
-  /* ── ONBOARDING ── */
-  #onboarding {
-    display: none;
-    flex-direction: column;
-    min-height: 100vh;
-    overflow-y: auto;
-  }
-  .onboard-header {
-    padding: 48px 24px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-  .onboard-logo {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--primary);
-    margin-bottom: 8px;
-  }
-  .onboard-tagline {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 500;
-  }
-  .progress-bar-wrap {
-    display: flex;
-    gap: 6px;
-    margin-top: 20px;
-  }
-  .progress-seg {
-    height: 4px;
-    flex: 1;
-    border-radius: 100px;
-    background: var(--border);
-    transition: background 0.3s;
-  }
-  .progress-seg.active { background: var(--primary); }
-  .onboard-body { padding: 24px; flex: 1; }
-  .onboard-step-title {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .onboard-step-sub {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin-bottom: 28px;
-  }
-
-  /* ── SUBJECT ROW IN ONBOARDING ── */
-  .subject-row {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 10px;
-  }
-  .subject-row-name {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text-primary);
-    margin-bottom: 4px;
-  }
-  .subject-row-meta {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  .subject-add-form {
-    background: #F8FAFF;
-    border: 1.5px dashed var(--secondary);
-    border-radius: 12px;
-    padding: 16px;
-    margin-top: 12px;
-  }
-
-  /* ── DAY CHECKBOX ── */
-  .day-checks { display: flex; gap: 6px; flex-wrap: wrap; }
-  .day-check-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 10px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .day-check-label input { display: none; }
-  .day-check-label.checked { border-color: var(--primary); background: #EEF1FF; color: var(--primary); }
-
-  /* ── MAIN APP ── */
-  #main-app { display: none; flex-direction: column; min-height: 100vh; }
-
-  /* ── DASHBOARD ── */
-  .dash-greeting {
-    padding: 20px 16px 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-  }
-  .dash-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-  .dash-roast {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 15px;
-    color: var(--text-secondary);
-    margin: 4px 16px 0;
-    line-height: 1.4;
-  }
-  .dash-big-pct {
-    text-align: center;
-    padding: 28px 16px 8px;
-  }
-  .dash-pct-num {
-    font-family: var(--font-display);
-    font-size: 72px;
-    font-weight: 900;
-    line-height: 1;
-  }
-  .dash-pct-label {
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-weight: 600;
-    margin-top: 4px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-
-  /* ── TODAY CLASSES ── */
-  .today-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    margin: 0 16px 10px;
-    overflow: hidden;
-  }
-  .today-card-header {
-    padding: 14px 16px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .today-card-name { font-weight: 700; font-size: 16px; }
-  .today-card-pct { font-size: 13px; color: var(--text-secondary); font-weight: 600; }
-  .today-card-actions {
-    display: flex;
-    border-top: 1px solid var(--border);
-  }
-  .log-btn {
-    flex: 1;
-    padding: 12px 6px;
-    border: none;
-    background: none;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s;
-    color: var(--text-secondary);
-  }
-  .log-btn:not(:last-child) { border-right: 1px solid var(--border); }
-  .log-btn.active-present { background: #DFFAEE; color: var(--success); }
-  .log-btn.active-absent { background: #FEECEC; color: var(--danger); }
-  .log-btn.active-cancelled { background: #FEF9EC; color: #C69A00; }
-  .log-btn:active { opacity: 0.7; }
-
-  .summary-line {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: center;
-    padding: 4px 16px 16px;
-  }
-
-  /* ── SUBJECTS VIEW ── */
-  .subject-card {
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .subject-card.expanded { border-color: var(--primary); }
-  .subject-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .subject-card-name { font-weight: 700; font-size: 16px; }
-  .subject-card-pct {
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 700;
-  }
-  .subject-card-counts {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-top: 2px;
-  }
-  .subject-card-expand { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
-  .expand-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
-  .expand-label { color: var(--text-secondary); font-weight: 500; }
-  .expand-val { font-weight: 700; }
-  .log-history { margin-top: 10px; }
-  .log-dot-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .log-dot {
-    width: 28px; height: 28px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .log-dot-P { background: #DFFAEE; color: var(--success); }
-  .log-dot-A { background: #FEECEC; color: var(--danger); }
-  .log-dot-C { background: #FEF9EC; color: #C69A00; }
-
-  /* ── CALENDAR ── */
-  .cal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 16px 8px;
-  }
-  .cal-nav-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    width: 34px; height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--text-primary);
-  }
-  .cal-month-label {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-  }
-  .cal-grid-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    padding: 0 16px;
-    gap: 2px;
-  }
-  .cal-day-label {
-    text-align: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    padding: 4px 0;
-  }
-  .cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    padding: 6px 16px 12px;
-  }
-  .cal-cell {
-    aspect-ratio: 1;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: border-color 0.15s;
-    position: relative;
-  }
-  .cal-cell.empty { cursor: default; }
-  .cal-cell.today-cell { border-color: var(--primary); }
-  .cal-cell.has-classes-good { background: #DFFAEE; color: var(--success); }
-  .cal-cell.has-classes-warn { background: #FEF9EC; color: #C69A00; }
-  .cal-cell.has-classes-bad { background: #FEECEC; color: var(--danger); }
-  .cal-cell.no-classes { background: var(--surface); color: var(--text-secondary); }
-  .cal-cell.future { background: transparent; color: var(--text-secondary); opacity: 0.5; }
-  .cal-day-detail {
-    margin: 0 16px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-  }
-  .streak-banner {
-    margin: 8px 16px 0;
-    background: var(--text-primary);
-    color: var(--bg);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* ── BUNK PLANNER ── */
-  .planner-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    margin: 0 16px 10px;
-    overflow: hidden;
-  }
-  .planner-day-header {
-    background: var(--bg);
-    padding: 10px 16px;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .planner-class-row {
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid var(--border);
-  }
-  .planner-class-name { font-weight: 600; font-size: 15px; }
-  .planner-class-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-  .skip-tag {
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.15s;
-  }
-  .skip-safe { background: #DFFAEE; color: var(--success); }
-  .skip-risky { background: #FEF9EC; color: #C69A00; }
-  .skip-no { background: #FEECEC; color: var(--danger); }
-  .skip-planning { background: var(--text-primary); color: var(--bg); }
-
-  /* ── SETTINGS ── */
-  .reset-zone { margin: 24px 16px 8px; }
-  .share-card-box {
-    margin: 0 16px;
-    background: var(--text-primary);
-    border-radius: 16px;
-    padding: 24px;
-    color: var(--bg);
-    position: relative;
-    overflow: hidden;
-  }
-  .share-card-pct {
-    font-family: var(--font-display);
-    font-size: 56px;
-    font-weight: 900;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .share-card-roast {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 14px;
-    opacity: 0.7;
-    margin-bottom: 16px;
-  }
-  .share-card-name { font-weight: 700; font-size: 16px; }
-  .share-card-brand {
-    position: absolute;
-    bottom: 16px; right: 20px;
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 900;
-    color: var(--primary);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .empty-state-title {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-  }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(26,31,54,0.5);
-    z-index: 200;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-sheet {
-    background: var(--surface);
-    border-radius: 20px 20px 0 0;
-    padding: 24px;
-    width: 100%;
-    max-width: 430px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  .modal-handle {
-    width: 36px; height: 4px;
-    background: var(--border);
-    border-radius: 100px;
-    margin: 0 auto 20px;
-  }
-  .modal-title {
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 16px;
-  }
-
-  /* ── UTILITY ── */
-  .text-success { color: var(--success); }
-  .text-warning { color: #C69A00; }
-  .text-danger { color: var(--danger); }
-  .text-secondary { color: var(--text-secondary); }
-  .mt-12 { margin-top: 12px; }
-  .mt-16 { margin-top: 16px; }
-  .hidden { display: none !important; }
-
-  .divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
-
-  /* planner impact line */
-  .impact-line {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-style: italic;
-    padding: 8px 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  /* Edit log btns inside modal */
-  .edit-log-btn {
-    flex: 1;
-    padding: 10px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    background: none;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-  }
-  .edit-log-btn.sel-P { border-color: var(--success); background: #DFFAEE; color: var(--success); }
-  .edit-log-btn.sel-A { border-color: var(--danger); background: #FEECEC; color: var(--danger); }
-  .edit-log-btn.sel-C { border-color: #C69A00; background: #FEF9EC; color: #C69A00; }
-  .edit-log-btn.sel-none { border-color: var(--border); background: none; color: var(--text-secondary); }
-
-  @media (max-width: 375px) {
-    .dash-pct-num { font-size: 60px; }
-    .subject-card-pct { font-size: 24px; }
-  }
-</style>
+    /* error hint */
+    .field-error {
+      font-size: 12px;
+      color: var(--danger);
+      margin-top: 5px;
+      font-weight: 600;
+      display: none;
+    }
+    .field-error.show { display: block; }
+  </style>
 </head>
 <body>
-<div id="app">
+<div class="ob-shell" id="ob-shell">
 
-  <!-- ═══════════════════════════════ ONBOARDING ═══════════════════════════════ -->
-  <div id="onboarding">
-    <div class="onboard-header">
-      <div class="onboard-logo">nudge.</div>
-      <div class="onboard-tagline">Log karo. Chill karo.</div>
-      <div class="progress-bar-wrap">
-        <div class="progress-seg active" id="prog0"></div>
-        <div class="progress-seg" id="prog1"></div>
-      </div>
-    </div>
-    <div class="onboard-body" id="onboard-body"></div>
-  </div>
-
-  <!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
-  <div id="main-app">
-    <!-- Marquee -->
-    <div class="marquee-bar">
-      <div class="marquee-inner" id="marquee-inner"></div>
-    </div>
-
-    <!-- View Container -->
-    <div class="view-content" id="view-container"></div>
-
-    <!-- Bottom Nav -->
-    <nav class="bottom-nav">
-      <button class="nav-btn active" onclick="switchView(0)" id="nav0">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
-      </button>
-      <button class="nav-btn" onclick="switchView(1)" id="nav1">
-        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-        Subjects
-      </button>
-      <button class="nav-btn" onclick="switchView(2)" id="nav2">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        Calendar
-      </button>
-      <button class="nav-btn" onclick="switchView(3)" id="nav3">
-        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-        Planner
-      </button>
-      <button class="nav-btn" onclick="switchView(4)" id="nav4">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        Settings
-      </button>
-    </nav>
-  </div>
-
-  <!-- ═══ MODALS ═══ -->
-  <div class="modal-overlay" id="modal-cal-day">
-    <div class="modal-sheet" id="modal-cal-day-content"></div>
-  </div>
-  <div class="modal-overlay" id="modal-add-subject">
-    <div class="modal-sheet" id="modal-add-subject-content"></div>
-  </div>
-  <div class="modal-overlay" id="modal-reset">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div class="modal-title">Sab kuch delete karein?</div>
-      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">Yeh action undo nahi hogi. Tumhara saara data — subjects, attendance, sab — permanently delete ho jayega.</p>
-      <div style="display:flex;gap:12px;">
-        <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-reset')">Cancel</button>
-        <button class="btn btn-danger" style="flex:1" onclick="doReset()">Haan, delete karo</button>
-      </div>
+  <!-- ── Header (sticky) ── -->
+  <div class="ob-header">
+    <div class="ob-logo">nudge.</div>
+    <div class="ob-tagline">Log karo. Chill karo.</div>
+    <div class="progress-bar">
+      <div class="prog-seg" id="prog-0"></div>
+      <div class="prog-seg" id="prog-1"></div>
     </div>
   </div>
+
+  <!-- ── Body ── -->
+  <div class="ob-body" id="ob-body"></div>
+
+  <!-- ── Footer CTA ── -->
+  <div class="ob-footer" id="ob-footer"></div>
+
 </div>
 
+<script src="shared.js"></script>
 <script>
-// ═══════════════════════════════════════════════════
-//  STATE & STORAGE
-// ═══════════════════════════════════════════════════
-let state = {
-  profile: null,   // name, college, city, stream, semester, startDate, endDate, threshold, condonation, strictness, commute
-  subjects: [],    // {id, name, days:[], lecturesPerWeek}
-  logs: {},        // { 'YYYY-MM-DD': { subjectId: 'P'|'A'|'C' } }
-  plannerSkips: {} // { 'YYYY-MM-DD': [subjectId,...] }
+// ── If already onboarded, skip straight to dashboard ──
+if (isOnboarded()) window.location.href = 'dashboard.html';
+
+// ── State ──
+const ob = {
+  step: 0,
+  profile: {},
+  subjects: []   // { id, name, days[], lecturesPerWeek }
 };
 
-function saveState() { localStorage.setItem('nudge_v1', JSON.stringify(state)); }
-function loadState() {
-  const raw = localStorage.getItem('nudge_v1');
-  if (raw) { try { state = JSON.parse(raw); } catch(e) { state = { profile:null, subjects:[], logs:{}, plannerSkips:{} }; } }
-  if (!state.logs) state.logs = {};
-  if (!state.plannerSkips) state.plannerSkips = {};
-}
+const STREAMS   = ['Engineering', 'Arts', 'Science', 'Commerce', 'Law', 'Medical'];
+const COMMUTES  = ['Local train', 'College bus', 'City bus', 'Auto', 'Own vehicle', "Don't commute"];
+const STRICTNESS= ['Strictly enforced', 'Moderate', 'Relaxed'];
+const THRESH_OPTS = ['75%', '80%', '85%', 'Custom'];
 
-// ═══════════════════════════════════════════════════
-//  DATE HELPERS
-// ═══════════════════════════════════════════════════
-function today() { return fmtDate(new Date()); }
-function fmtDate(d) { return d.toISOString().split('T')[0]; }
-function parseDate(s) { const [y,m,d] = s.split('-'); return new Date(+y,+m-1,+d); }
-function dayOfWeek(dateStr) { // 0=Sun,1=Mon,...
-  return parseDate(dateStr).getDay();
-}
-const DAY_MAP = { Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6, Sun:0 };
-const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-function weeksBetween(start, end) {
-  const ms = parseDate(end) - parseDate(start);
-  return Math.max(1, Math.round(ms / (7*24*3600*1000)));
-}
-
-function datesInRange(start, end) {
-  const dates = [];
-  const s = parseDate(start), e = parseDate(end);
-  const cur = new Date(s);
-  while(cur <= e) { dates.push(fmtDate(cur)); cur.setDate(cur.getDate()+1); }
-  return dates;
-}
-
-// ═══════════════════════════════════════════════════
-//  CALCULATIONS
-// ═══════════════════════════════════════════════════
-function getSubjectStats(subject) {
-  const logs = state.logs;
-  let attended = 0, held = 0;
-  const allDates = state.profile ? datesInRange(state.profile.startDate, state.profile.endDate) : [];
-  const history = [];
-  for (const dateStr of allDates) {
-    if (dateStr > today()) continue;
-    const dow = parseDate(dateStr).getDay();
-    if (!subject.days.includes(dow)) continue;
-    const log = logs[dateStr]?.[subject.id];
-    if (log === 'P') { attended++; held++; history.push({date:dateStr, status:'P'}); }
-    else if (log === 'A') { held++; history.push({date:dateStr, status:'A'}); }
-    else if (log === 'C') { history.push({date:dateStr, status:'C'}); }
-    // unlogged: count as held+absent if date has passed
-    else { held++; attended--; attended = Math.max(0, attended+1); held--; }
-    // Actually only count if explicitly logged
-  }
-  // Re-do: only count explicitly logged
-  attended = 0; held = 0;
-  const histFinal = [];
-  for (const dateStr of allDates) {
-    if (dateStr > today()) continue;
-    const dow = parseDate(dateStr).getDay();
-    if (!subject.days.includes(dow)) continue;
-    const log = logs[dateStr]?.[subject.id];
-    if (log === 'P') { attended++; held++; histFinal.push({date:dateStr, status:'P'}); }
-    else if (log === 'A') { held++; histFinal.push({date:dateStr, status:'A'}); }
-    else if (log === 'C') { histFinal.push({date:dateStr, status:'C'}); }
-    // Unlogged scheduled class counts as held but not attended (absent by default)
-    else { held++; histFinal.push({date:dateStr, status:'?'}); }
-  }
-  const pct = held > 0 ? Math.round((attended/held)*100) : null;
-  const threshold = state.profile?.threshold || 75;
-  let bunkBudget = 0, recovery = 0;
-  if (held > 0) {
-    // bunk budget: how many more can be missed keeping pct >= threshold
-    // solve (attended)/(held+n) >= threshold/100 => n <= attended*100/threshold - held
-    bunkBudget = Math.max(0, Math.floor(attended * 100 / threshold - held));
-    // recovery: if below threshold, need (attended+n)/(held+n) >= threshold/100
-    // n(1-threshold/100) >= threshold/100*held - attended
-    // n >= (threshold/100*held - attended)/(1 - threshold/100)
-    if (pct !== null && pct < threshold) {
-      const t = threshold/100;
-      recovery = Math.ceil((t*held - attended)/(1-t));
-    }
-  }
-  const status = pct === null ? 'unknown' : pct >= threshold ? 'safe' : pct >= threshold - 10 ? 'warning' : 'danger';
-  return { attended, held, pct, bunkBudget, recovery, status, history: histFinal.slice(-20) };
-}
-
-function getOverallPct() {
-  if (!state.subjects.length) return null;
-  let totAtt = 0, totHeld = 0;
-  for (const s of state.subjects) {
-    const { attended, held } = getSubjectStats(s);
-    totAtt += attended; totHeld += held;
-  }
-  return totHeld > 0 ? Math.round((totAtt/totHeld)*100) : null;
-}
-
-function getOverallSummary() {
-  // Total bunk budget across all subjects (min bunk budget = limiting factor)
-  if (!state.subjects.length) return null;
-  const threshold = state.profile?.threshold || 75;
-  let totAtt = 0, totHeld = 0;
-  for (const s of state.subjects) {
-    const { attended, held } = getSubjectStats(s);
-    totAtt += attended; totHeld += held;
-  }
-  const pct = totHeld > 0 ? Math.round((totAtt/totHeld)*100) : null;
-  if (pct === null) return null;
-  if (pct >= threshold) {
-    const budget = Math.floor(totAtt * 100/threshold - totHeld);
-    return `You can skip ${budget} more class${budget===1?'':'es'} across all subjects.`;
-  } else {
-    const t = threshold/100;
-    const recovery = Math.ceil((t*totHeld - totAtt)/(1-t));
-    return `Attend ${recovery} more class${recovery===1?'':'es'} to reach ${threshold}%.`;
-  }
-}
-
-// ═══════════════════════════════════════════════════
-//  ROAST MESSAGES
-// ═══════════════════════════════════════════════════
-const ROASTS = {
-  '90-100': [
-    "Your professor knows your name, your face, and probably your dad's number too.",
-    "First bench energy. We respect it, we fear it."
-  ],
-  '75-89': [
-    "Safe. But don't get cocky, one sick week and you're cooked.",
-    "Attendance is fine. Life choices, debatable."
-  ],
-  '65-74': [
-    "Yaar, seriously. One more absence and the college calls home.",
-    "You're not failing, you're just aggressively testing the system."
-  ],
-  '50-64': [
-    "Your professor has genuinely forgotten what you look like.",
-    "At this point your seat knows you better than your teacher does."
-  ],
-  'below50': [
-    "You are paying fees to fund a college you have never visited.",
-    "Bhai. Just. Come. To. Class."
-  ],
-  'exact75': [
-    "One class away from disaster. Living life on hard mode, respect.",
-    "75% exactly. You planned this, didn't you."
-  ]
-};
-
-function getRoast(pct) {
-  if (pct === null) return "Data nahi hai. Log karo pehle.";
-  let bucket;
-  const threshold = state.profile?.threshold || 75;
-  if (pct === threshold && threshold === 75) bucket = 'exact75';
-  else if (pct >= 90) bucket = '90-100';
-  else if (pct >= 75) bucket = '75-89';
-  else if (pct >= 65) bucket = '65-74';
-  else if (pct >= 50) bucket = '50-64';
-  else bucket = 'below50';
-  const arr = ROASTS[bucket];
-  return arr[Math.floor(Math.random()*arr.length)];
-}
-
-let _sessionRoast = null;
-function getSessionRoast() {
-  if (!_sessionRoast) _sessionRoast = getRoast(getOverallPct());
-  return _sessionRoast;
-}
-
-// ═══════════════════════════════════════════════════
-//  ONBOARDING
-// ═══════════════════════════════════════════════════
-let ob = { step: 0, profile: {}, subjects: [], addingSubject: false };
-
-const STREAMS = ['Engineering','Arts','Science','Commerce','Law','Medical'];
-const COMMUTES = ['Local train','College bus','City bus','Auto','Own vehicle','Don\'t commute'];
-
-function renderOnboarding() {
-  document.getElementById('onboarding').style.display = 'flex';
-  document.getElementById('main-app').style.display = 'none';
-  document.getElementById('prog0').classList.toggle('active', ob.step >= 0);
-  document.getElementById('prog1').classList.toggle('active', ob.step >= 1);
+// ── Render dispatcher ──
+function render() {
+  updateProgress();
   if (ob.step === 0) renderStep1();
-  else renderStep2();
+  else               renderStep2();
 }
 
+function updateProgress() {
+  document.getElementById('prog-0').classList.toggle('done', ob.step >= 0);
+  document.getElementById('prog-1').classList.toggle('done', ob.step >= 1);
+}
+
+// ══════════════════════════════════
+//  STEP 1
+// ══════════════════════════════════
 function renderStep1() {
-  const maxSem = ob.profile.stream === 'Engineering' ? 8 : 6;
-  const sems = Array.from({length: maxSem}, (_,i) => i+1);
-  const thresholds = ['75%','80%','85%','Custom'];
-  const strictness = ['Strictly enforced','Moderate','Relaxed'];
+  const p = ob.profile;
+  const maxSem = p.stream === 'Engineering' ? 8 : 6;
 
-  const commuteSelected = ob.profile.commute || [];
-  const semSelected = ob.profile.semester;
-  const streamSelected = ob.profile.stream;
-  const threshSelected = ob.profile.thresholdType;
-  const strictSelected = ob.profile.strictness;
-
-  document.getElementById('onboard-body').innerHTML = `
-    <div class="onboard-step-title">Pehle, apne baare mein batao</div>
-    <div class="onboard-step-sub">Yeh sab sirf tumhare liye hai. Koi nahi dekhta.</div>
+  document.getElementById('ob-body').innerHTML = `
+    <div class="ob-step-title">Pehle apne baare<br>mein batao.</div>
+    <div class="ob-step-sub">Yeh sirf tumhare liye hai. Koi nahi dekhta.</div>
 
     <div class="form-group">
       <label class="form-label">Apna naam batao</label>
-      <input class="input" id="ob-name" placeholder="e.g. Ananya" value="${ob.profile.name||''}">
+      <input class="input" id="f-name" placeholder="e.g. Ananya" value="${esc(p.name||'')}">
+      <div class="field-error" id="err-name">Naam toh daalo!</div>
     </div>
+
     <div class="form-group">
       <label class="form-label">Kaunsa college?</label>
-      <input class="input" id="ob-college" placeholder="College ka naam" value="${ob.profile.college||''}">
+      <input class="input" id="f-college" placeholder="e.g. St. Xavier's College" value="${esc(p.college||'')}">
     </div>
+
     <div class="form-group">
       <label class="form-label">Kaunsa city?</label>
-      <input class="input" id="ob-city" placeholder="Mumbai, Pune, Delhi..." value="${ob.profile.city||''}">
+      <input class="input" id="f-city" placeholder="e.g. Mumbai" value="${esc(p.city||'')}">
     </div>
 
     <div class="form-group">
       <label class="form-label">Stream kya hai?</label>
-      <div class="btn-group" id="stream-group">
-        ${STREAMS.map(s=>`<button class="btn-group-item ${streamSelected===s?'selected':''}" onclick="selectStream('${s}')">${s}</button>`).join('')}
+      <div class="btn-group">
+        ${STREAMS.map(s => `
+          <button type="button" class="btn-group-item ${p.stream===s?'selected':''}"
+            onclick="selectOne('stream','${s}',this.closest('.btn-group'))">${s}</button>
+        `).join('')}
       </div>
+      <div class="field-error" id="err-stream">Stream choose karo.</div>
     </div>
 
     <div class="form-group">
       <label class="form-label">Kaun sa semester?</label>
-      <div class="btn-group" id="sem-group">
-        ${sems.map(s=>`<button class="btn-group-item ${semSelected===s?'selected':''}" onclick="selectSem(${s})">${s}</button>`).join('')}
+      <div class="btn-group">
+        ${Array.from({length: maxSem}, (_,i)=>i+1).map(n=>`
+          <button type="button" class="btn-group-item ${p.semester===n?'selected':''}"
+            onclick="selectOnePrim('semester',${n},this.closest('.btn-group'))">${n}</button>
+        `).join('')}
       </div>
+      <div class="field-error" id="err-sem">Semester select karo.</div>
     </div>
 
     <div class="form-group">
       <label class="form-label">Semester kab shuru hua?</label>
-      <input class="input" type="date" id="ob-start" value="${ob.profile.startDate||''}">
+      <input class="input" type="date" id="f-start" value="${p.startDate||''}">
+      <div class="field-error" id="err-start">Start date daalo.</div>
     </div>
+
     <div class="form-group">
       <label class="form-label">Semester kab khatam hoga?</label>
-      <input class="input" type="date" id="ob-end" value="${ob.profile.endDate||''}">
+      <input class="input" type="date" id="f-end" value="${p.endDate||''}">
+      <div class="field-error" id="err-end">End date daalo.</div>
     </div>
 
     <div class="form-group">
       <label class="form-label">Kitne % attendance chahiye?</label>
-      <div class="btn-group" id="thresh-group">
-        ${thresholds.map(t=>`<button class="btn-group-item ${threshSelected===t?'selected':''}" onclick="selectThreshold('${t}')">${t}</button>`).join('')}
+      <div class="btn-group">
+        ${THRESH_OPTS.map(t=>`
+          <button type="button" class="btn-group-item ${p.threshType===t?'selected':''}"
+            onclick="selectThresh('${t}',this.closest('.btn-group'))">${t}</button>
+        `).join('')}
       </div>
-      <div id="custom-thresh-wrap" style="margin-top:10px;display:${threshSelected==='Custom'?'block':'none'}">
-        <input class="input" type="number" id="ob-custom-thresh" min="1" max="100" placeholder="e.g. 70" value="${ob.profile.customThreshold||''}">
+      <div id="custom-thresh-wrap" style="margin-top:10px;${p.threshType==='Custom'?'':'display:none'}">
+        <input class="input" type="number" id="f-custom-thresh" min="1" max="100"
+          placeholder="Percentage daalo, e.g. 70" value="${p.customThresh||''}">
       </div>
+      <div class="field-error" id="err-thresh">Threshold choose karo.</div>
     </div>
 
     <div class="form-group">
       <label class="form-label">Condonation milti hai?</label>
       <div class="toggle-wrap">
         <label class="toggle">
-          <input type="checkbox" id="ob-condonation" ${ob.profile.condonation?'checked':''} onchange="toggleCondonation(this)">
+          <input type="checkbox" id="f-condonation" ${p.condonation?'checked':''}
+            onchange="toggleCondonation(this.checked)">
           <span class="toggle-slider"></span>
         </label>
-        <span style="font-size:14px;font-weight:600">${ob.profile.condonation?'Haan':'Nahi'}</span>
+        <span class="toggle-label" id="cond-label">${p.condonation?'Haan':'Nahi'}</span>
       </div>
-      <div id="condonation-pts-wrap" style="margin-top:10px;display:${ob.profile.condonation?'block':'none'}">
-        <input class="input" type="number" id="ob-condonation-pts" min="1" max="20" placeholder="Kitne % ki chhoot milti hai?" value="${ob.profile.condonationPts||''}">
+      <div id="cond-pts-wrap" style="margin-top:12px;${p.condonation?'':'display:none'}">
+        <input class="input" type="number" id="f-cond-pts" min="1" max="20"
+          placeholder="Kitne % ki chhoot? e.g. 5" value="${p.condonationPts||''}">
       </div>
     </div>
 
     <div class="form-group">
       <label class="form-label">Attendance kitni strictly enforce hoti hai?</label>
       <div class="btn-group">
-        ${strictness.map(s=>`<button class="btn-group-item ${strictSelected===s?'selected':''}" onclick="selectStrictness('${s}')">${s}</button>`).join('')}
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">College kaise jaate ho? (multiple select)</label>
-      <div class="btn-group">
-        ${COMMUTES.map(c=>`<button class="btn-group-item ${commuteSelected.includes(c)?'selected':''}" onclick="toggleCommute('${c}')">${c}</button>`).join('')}
-      </div>
-    </div>
-
-    <div style="margin-top:8px">
-      <button class="btn btn-primary btn-full" onclick="step1Next()">Aage chalo</button>
-    </div>
-  `;
-}
-
-function selectStream(s) {
-  ob.profile.stream = s;
-  if (ob.profile.semester > (s==='Engineering'?8:6)) ob.profile.semester = null;
-  renderStep1();
-}
-function selectSem(n) { ob.profile.semester = n; renderStep1(); }
-function selectThreshold(t) {
-  ob.profile.thresholdType = t;
-  document.getElementById('custom-thresh-wrap').style.display = t==='Custom'?'block':'none';
-  document.querySelectorAll('#thresh-group .btn-group-item').forEach(el=>el.classList.toggle('selected', el.textContent===t));
-}
-function selectStrictness(s) {
-  ob.profile.strictness = s;
-  document.querySelectorAll('#onboard-body .btn-group').forEach(grp=>{
-    grp.querySelectorAll('.btn-group-item').forEach(el=>{
-      if(['Strictly enforced','Moderate','Relaxed'].includes(el.textContent)) el.classList.toggle('selected', el.textContent===s);
-    });
-  });
-  renderStep1();
-}
-function toggleCommute(c) {
-  if (!ob.profile.commute) ob.profile.commute = [];
-  const idx = ob.profile.commute.indexOf(c);
-  if (idx>=0) ob.profile.commute.splice(idx,1); else ob.profile.commute.push(c);
-  document.querySelectorAll('#onboard-body .btn-group').forEach(grp=>{
-    grp.querySelectorAll('.btn-group-item').forEach(el=>{
-      if(COMMUTES.includes(el.textContent)) el.classList.toggle('selected', ob.profile.commute.includes(el.textContent));
-    });
-  });
-}
-function toggleCondonation(el) {
-  ob.profile.condonation = el.checked;
-  document.getElementById('condonation-pts-wrap').style.display = el.checked?'block':'none';
-  el.parentElement.nextElementSibling.textContent = el.checked?'Haan':'Nahi';
-}
-
-function step1Next() {
-  ob.profile.name = document.getElementById('ob-name').value.trim();
-  ob.profile.college = document.getElementById('ob-college').value.trim();
-  ob.profile.city = document.getElementById('ob-city').value.trim();
-  ob.profile.startDate = document.getElementById('ob-start').value;
-  ob.profile.endDate = document.getElementById('ob-end').value;
-  if (ob.profile.thresholdType === 'Custom') {
-    ob.profile.customThreshold = document.getElementById('ob-custom-thresh').value;
-  }
-  if (ob.profile.condonation) {
-    ob.profile.condonationPts = document.getElementById('ob-condonation-pts').value;
-  }
-  if (!ob.profile.name) { alert('Naam toh batao!'); return; }
-  if (!ob.profile.startDate || !ob.profile.endDate) { alert('Semester dates daalo!'); return; }
-  if (!ob.profile.thresholdType) { alert('Attendance threshold select karo!'); return; }
-  if (ob.profile.thresholdType === 'Custom' && !ob.profile.customThreshold) { alert('Custom % daalo!'); return; }
-  ob.step = 1;
-  renderOnboarding();
-}
-
-function renderStep2() {
-  let subjectsHtml = '';
-  if (ob.subjects.length) {
-    subjectsHtml = ob.subjects.map((s,i)=>`
-      <div class="subject-row">
-        <div class="subject-row-name">${s.name}</div>
-        <div class="subject-row-meta">${s.days.map(d=>DAY_LABELS[d]).join(', ')} — ${s.lecturesPerWeek} lecture${s.lecturesPerWeek>1?'s':''}/week</div>
-      </div>
-    `).join('');
-  }
-
-  const addFormHtml = ob.subjects.length < 12 ? `
-    <div class="subject-add-form">
-      <div class="form-group" style="margin-bottom:14px">
-        <label class="form-label">Subject ka naam</label>
-        <input class="input" id="ob-sub-name" placeholder="e.g. Engineering Maths">
-      </div>
-      <div class="form-group" style="margin-bottom:14px">
-        <label class="form-label">Kaunse din hote hain?</label>
-        <div class="day-checks" id="ob-day-checks">
-          ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`
-            <label class="day-check-label" id="dlbl-${d}">
-              <input type="checkbox" value="${DAY_MAP[d]}" onchange="updateDayCheck(this,'${d}')"> ${d}
-            </label>
-          `).join('')}
-        </div>
-      </div>
-      <div class="form-group" style="margin-bottom:14px">
-        <label class="form-label">Kitne lectures per week?</label>
-        <input class="input" type="number" id="ob-sub-lpw" min="1" max="6" placeholder="e.g. 3">
-      </div>
-      <button class="btn btn-secondary btn-full" onclick="addSubjectOb()">Subject add karo</button>
-    </div>
-  ` : '<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:12px">12 subjects ho gaye. Enough hai.</p>';
-
-  document.getElementById('onboard-body').innerHTML = `
-    <div class="onboard-step-title">Subjects add karo</div>
-    <div class="onboard-step-sub">Ek ek karke. Baad mein bhi add kar sakte ho.</div>
-    ${subjectsHtml}
-    ${addFormHtml}
-    ${ob.subjects.length > 0 ? `
-      <div style="margin-top:20px">
-        <button class="btn btn-primary btn-full" onclick="finishOnboarding()">Done. Dashboard dikhao.</button>
-      </div>
-    ` : ''}
-  `;
-}
-
-function updateDayCheck(el, day) {
-  const lbl = document.getElementById('dlbl-'+day);
-  lbl.classList.toggle('checked', el.checked);
-}
-
-function addSubjectOb() {
-  const name = document.getElementById('ob-sub-name').value.trim();
-  const checks = document.querySelectorAll('#ob-day-checks input:checked');
-  const days = Array.from(checks).map(c=>+c.value);
-  const lpw = +document.getElementById('ob-sub-lpw').value;
-  if (!name) { alert('Subject naam daalo!'); return; }
-  if (!days.length) { alert('Koi din select nahi kiya!'); return; }
-  if (!lpw || lpw < 1) { alert('Lectures per week daalo!'); return; }
-  ob.subjects.push({ id: 'sub_'+Date.now()+'_'+Math.random().toString(36).slice(2), name, days, lecturesPerWeek: lpw });
-  renderStep2();
-}
-
-function finishOnboarding() {
-  if (!ob.subjects.length) { alert('Kam se kam ek subject toh add karo!'); return; }
-  const t = ob.profile.thresholdType;
-  const threshold = t==='75%'?75:t==='80%'?80:t==='85%'?85:+ob.profile.customThreshold;
-  state.profile = {
-    name: ob.profile.name,
-    college: ob.profile.college,
-    city: ob.profile.city,
-    stream: ob.profile.stream,
-    semester: ob.profile.semester,
-    startDate: ob.profile.startDate,
-    endDate: ob.profile.endDate,
-    threshold,
-    condonation: ob.profile.condonation||false,
-    condonationPts: ob.profile.condonationPts||0,
-    strictness: ob.profile.strictness,
-    commute: ob.profile.commute||[],
-    thresholdType: t
-  };
-  state.subjects = ob.subjects;
-  saveState();
-  launchApp();
-}
-
-// ═══════════════════════════════════════════════════
-//  APP LAUNCH
-// ═══════════════════════════════════════════════════
-let currentView = 0;
-
-function launchApp() {
-  document.getElementById('onboarding').style.display = 'none';
-  document.getElementById('main-app').style.display = 'flex';
-  setupMarquee();
-  switchView(0);
-}
-
-function setupMarquee() {
-  const msgs = ['Log karo. Chill karo.','Hum bas count karte hain.','Aaj kitne classes hain?'];
-  const full = msgs.map(m=>`<span>${m}</span>`).join('') + msgs.map(m=>`<span>${m}</span>`).join('');
-  document.getElementById('marquee-inner').innerHTML = full;
-}
-
-function switchView(n) {
-  currentView = n;
-  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',i===n));
-  const vc = document.getElementById('view-container');
-  vc.scrollTop = 0;
-  if (n===0) renderDashboard();
-  else if (n===1) renderSubjects();
-  else if (n===2) renderCalendar();
-  else if (n===3) renderPlanner();
-  else if (n===4) renderSettings();
-}
-
-// ═══════════════════════════════════════════════════
-//  VIEW 1: DASHBOARD
-// ═══════════════════════════════════════════════════
-function renderDashboard() {
-  const vc = document.getElementById('view-container');
-  const pct = getOverallPct();
-  const pctColor = pct===null?'var(--text-secondary)':pct>=(state.profile?.threshold||75)?'var(--success)':pct>=(state.profile?.threshold||75)-10?'#C69A00':'var(--danger)';
-  const roast = getSessionRoast();
-  const todayClasses = getTodayClasses();
-  const summary = getOverallSummary();
-  const hour = new Date().getHours();
-  const greeting = hour<12?'Subah ki salamat,':hour<17?'Dopahar ka namskar,':'Shaam ki shuruaat,';
-
-  let todayHtml = '';
-  if (!state.subjects.length) {
-    todayHtml = `<div class="empty-state"><div class="empty-state-title">No subjects yet.</div>Add one, then we can talk.</div>`;
-  } else if (!todayClasses.length) {
-    todayHtml = `<div class="empty-state" style="padding:24px"><div class="empty-state-title">Aaj koi class nahi.</div>Enjoy the day. You earned it.</div>`;
-  } else {
-    todayHtml = todayClasses.map(s=>{
-      const log = state.logs[today()]?.[s.id];
-      const stats = getSubjectStats(s);
-      return `
-        <div class="today-card">
-          <div class="today-card-header">
-            <div class="today-card-name">${s.name}</div>
-            <div class="today-card-pct" style="color:${stats.pct!==null?(stats.pct>=(state.profile?.threshold||75)?'var(--success)':stats.pct>=(state.profile?.threshold||75)-10?'#C69A00':'var(--danger)'):'var(--text-secondary)'}">${stats.pct!==null?stats.pct+'%':'—'}</div>
-          </div>
-          <div class="today-card-actions">
-            <button class="log-btn ${log==='P'?'active-present':''}" onclick="logClass('${s.id}','P')">Present</button>
-            <button class="log-btn ${log==='A'?'active-absent':''}" onclick="logClass('${s.id}','A')">Absent</button>
-            <button class="log-btn ${log==='C'?'active-cancelled':''}" onclick="logClass('${s.id}','C')">Cancelled</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  vc.innerHTML = `
-    <div class="dash-greeting">${greeting}<br><span class="dash-name">${state.profile?.name||'student'}.</span></div>
-    <div class="dash-roast">${roast}</div>
-    <div class="dash-big-pct">
-      <div class="dash-pct-num" style="color:${pctColor}">${pct!==null?pct+'%':'—'}</div>
-      <div class="dash-pct-label">Overall Attendance</div>
-    </div>
-    <div class="section-title">Aaj ke classes</div>
-    ${todayHtml}
-    ${summary ? `<div class="summary-line">${summary}</div>` : ''}
-  `;
-}
-
-function getTodayClasses() {
-  const dow = parseDate(today()).getDay();
-  return state.subjects.filter(s=>s.days.includes(dow));
-}
-
-function logClass(subjectId, status) {
-  if (!state.logs[today()]) state.logs[today()] = {};
-  if (state.logs[today()][subjectId] === status) {
-    delete state.logs[today()][subjectId];
-  } else {
-    state.logs[today()][subjectId] = status;
-  }
-  saveState();
-  renderDashboard();
-}
-
-// ═══════════════════════════════════════════════════
-//  VIEW 2: SUBJECTS
-// ═══════════════════════════════════════════════════
-let expandedSubject = null;
-
-function renderSubjects() {
-  const vc = document.getElementById('view-container');
-  if (!state.subjects.length) {
-    vc.innerHTML = `
-      <div class="section-title">Subjects</div>
-      <div class="empty-state">
-        <div class="empty-state-title">No subjects yet.</div>
-        Add one, then we can talk.
-        <div style="margin-top:16px"><button class="btn btn-primary" onclick="openAddSubjectModal()">Add subject</button></div>
-      </div>`;
-    return;
-  }
-
-  const threshold = state.profile?.threshold||75;
-  const subjectsHtml = state.subjects.map(s=>{
-    const stats = getSubjectStats(s);
-    const pctColor = stats.pct===null?'var(--text-secondary)':stats.pct>=threshold?'var(--success)':stats.pct>=threshold-10?'#C69A00':'var(--danger)';
-    const badge = stats.status==='safe'?'badge-safe':stats.status==='warning'?'badge-warning':'badge-danger';
-    const badgeLabel = stats.status==='safe'?'Safe':stats.status==='warning'?'Warning':'Danger';
-    const isExpanded = expandedSubject === s.id;
-    const recentLogs = stats.history.slice(-5).reverse();
-    const expandHtml = isExpanded ? `
-      <div class="subject-card-expand">
-        <div class="expand-row">
-          <span class="expand-label">Bunk budget</span>
-          <span class="expand-val">${stats.bunkBudget} class${stats.bunkBudget===1?'':'es'}</span>
-        </div>
-        ${stats.recovery > 0 ? `<div class="expand-row">
-          <span class="expand-label">Recovery needed</span>
-          <span class="expand-val text-danger">${stats.recovery} class${stats.recovery===1?'':'es'} in a row</span>
-        </div>` : ''}
-        <div class="expand-label" style="margin-top:8px">Last 5 classes</div>
-        <div class="log-dot-row">
-          ${recentLogs.length ? recentLogs.map(l=>`<div class="log-dot log-dot-${l.status==='?'?'A':l.status}" title="${l.date}">${l.status==='?'?'?':l.status}</div>`).join('') : '<span style="font-size:12px;color:var(--text-secondary)">No logs yet</span>'}
-        </div>
-      </div>
-    ` : '';
-
-    return `
-      <div class="card subject-card ${isExpanded?'expanded':''}" onclick="toggleSubject('${s.id}')">
-        <div class="subject-card-top">
-          <div>
-            <div class="subject-card-name">${s.name}</div>
-            <div class="subject-card-counts" style="margin-top:4px">${stats.attended} attended / ${stats.held} held</div>
-            <div style="margin-top:8px"><span class="badge ${badge}">${badgeLabel}</span></div>
-          </div>
-          <div class="subject-card-pct" style="color:${pctColor}">${stats.pct!==null?stats.pct+'%':'—'}</div>
-        </div>
-        ${expandHtml}
-      </div>
-    `;
-  }).join('');
-
-  vc.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 16px 12px">
-      <div class="section-title" style="margin:0">Subjects</div>
-      <button class="btn btn-secondary" style="padding:8px 14px;font-size:13px" onclick="openAddSubjectModal()">Add subject</button>
-    </div>
-    ${subjectsHtml}
-  `;
-}
-
-function toggleSubject(id) {
-  expandedSubject = expandedSubject === id ? null : id;
-  renderSubjects();
-}
-
-// ═══════════════════════════════════════════════════
-//  VIEW 3: CALENDAR
-// ═══════════════════════════════════════════════════
-let calDate = new Date();
-
-function renderCalendar() {
-  const vc = document.getElementById('view-container');
-  const streak = getStreak();
-  const year = calDate.getFullYear(), month = calDate.getMonth();
-  const monthLabel = calDate.toLocaleString('default',{month:'long', year:'numeric'});
-  const firstDay = new Date(year,month,1).getDay();
-  const daysInMonth = new Date(year,month+1,0).getDate();
-  const todayStr = today();
-
-  let cells = '';
-  for(let i=0;i<firstDay;i++) cells+=`<div class="cal-cell empty"></div>`;
-  for(let d=1;d<=daysInMonth;d++){
-    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isFuture = ds > todayStr;
-    const isToday = ds === todayStr;
-    const dow = parseDate(ds).getDay();
-    const scheduledSubs = state.subjects.filter(s=>s.days.includes(dow));
-    let cls='cal-cell';
-    if(isFuture) cls+=' future';
-    else if(!scheduledSubs.length) cls+=' no-classes';
-    else {
-      const logs = state.logs[ds]||{};
-      const attended = scheduledSubs.filter(s=>logs[s.id]==='P').length;
-      const cancelled = scheduledSubs.filter(s=>logs[s.id]==='C').length;
-      const held = scheduledSubs.length - cancelled;
-      const pct = held>0?attended/held:1;
-      cls += pct>=0.75?' has-classes-good':pct>=0.5?' has-classes-warn':' has-classes-bad';
-    }
-    if(isToday) cls+=' today-cell';
-    cells += `<div class="${cls}" onclick="openCalDay('${ds}')">${d}</div>`;
-  }
-
-  vc.innerHTML = `
-    ${streak>0?`<div class="streak-banner"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>${streak} class streak. Don't blow it.</div>`:''}
-    <div class="cal-header">
-      <button class="cal-nav-btn" onclick="calNav(-1)">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-      <div class="cal-month-label">${monthLabel}</div>
-      <button class="cal-nav-btn" onclick="calNav(1)">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-    </div>
-    <div class="cal-grid-header">
-      ${['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-day-label">${d}</div>`).join('')}
-    </div>
-    <div class="cal-grid">${cells}</div>
-    <div id="cal-day-detail"></div>
-  `;
-}
-
-function calNav(dir) {
-  calDate = new Date(calDate.getFullYear(), calDate.getMonth()+dir, 1);
-  renderCalendar();
-}
-
-function getStreak() {
-  let streak = 0;
-  const cur = new Date();
-  cur.setDate(cur.getDate()-1);
-  while(true) {
-    const ds = fmtDate(cur);
-    const dow = cur.getDay();
-    const scheduled = state.subjects.filter(s=>s.days.includes(dow));
-    if(!scheduled.length) { cur.setDate(cur.getDate()-1); if(streak>20) break; continue; }
-    const logs = state.logs[ds]||{};
-    const allPresent = scheduled.every(s=>logs[s.id]==='P'||logs[s.id]==='C');
-    if(!allPresent) break;
-    streak++;
-    cur.setDate(cur.getDate()-1);
-    if(streak>60) break;
-  }
-  return streak;
-}
-
-function openCalDay(ds) {
-  const dow = parseDate(ds).getDay();
-  const scheduled = state.subjects.filter(s=>s.days.includes(dow));
-  const logs = state.logs[ds]||{};
-  const isFuture = ds > today();
-  const dateLabel = parseDate(ds).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
-
-  const subjectRows = scheduled.length ? scheduled.map(s=>{
-    const log = logs[s.id];
-    return `
-      <div style="margin-bottom:14px">
-        <div style="font-weight:700;font-size:15px;margin-bottom:8px">${s.name}</div>
-        <div style="display:flex;gap:8px">
-          <button class="edit-log-btn ${log==='P'?'sel-P':''}" onclick="editLog('${ds}','${s.id}','P')">Present</button>
-          <button class="edit-log-btn ${log==='A'?'sel-A':''}" onclick="editLog('${ds}','${s.id}','A')">Absent</button>
-          <button class="edit-log-btn ${log==='C'?'sel-C':''}" onclick="editLog('${ds}','${s.id}','C')">Cancelled</button>
-          <button class="edit-log-btn ${!log?'sel-none':''}" onclick="editLog('${ds}','${s.id}',null)">Clear</button>
-        </div>
-      </div>
-    `;
-  }).join('') : '<p style="color:var(--text-secondary);font-size:14px">Is din koi class nahi thi.</p>';
-
-  const content = document.getElementById('modal-cal-day-content');
-  content.innerHTML = `
-    <div class="modal-handle"></div>
-    <div class="modal-title">${dateLabel}</div>
-    ${isFuture?'<p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Future date — log nahi kar sakte abhi.</p>':''}
-    ${!isFuture?subjectRows:scheduled.map(s=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);font-weight:600">${s.name}</div>`).join('')}
-    <div style="margin-top:16px"><button class="btn btn-secondary btn-full" onclick="closeModal('modal-cal-day')">Close</button></div>
-  `;
-  document.getElementById('modal-cal-day').classList.add('open');
-}
-
-function editLog(ds, subjectId, status) {
-  if (!state.logs[ds]) state.logs[ds] = {};
-  if (status===null) delete state.logs[ds][subjectId];
-  else state.logs[ds][subjectId] = status;
-  saveState();
-  openCalDay(ds);
-  if(currentView===0) renderDashboard();
-}
-
-// ═══════════════════════════════════════════════════
-//  VIEW 4: BUNK PLANNER
-// ═══════════════════════════════════════════════════
-function renderPlanner() {
-  const vc = document.getElementById('view-container');
-  const threshold = state.profile?.threshold || 75;
-  const next7 = [];
-  const cur = new Date();
-  for(let i=0;i<7;i++){
-    const d = new Date(cur);
-    d.setDate(cur.getDate()+i);
-    next7.push(fmtDate(d));
-  }
-
-  let html = `<div class="section-title">Bunk Planner</div>`;
-
-  for(const ds of next7){
-    const dow = parseDate(ds).getDay();
-    const classes = state.subjects.filter(s=>s.days.includes(dow));
-    if(!classes.length) continue;
-    const dayLabel = parseDate(ds).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short'});
-    const skips = state.plannerSkips[ds]||[];
-
-    const rows = classes.map(s=>{
-      const stats = getSubjectStats(s);
-      const isSkipping = skips.includes(s.id);
-      // Calculate impact of skipping
-      let tag, tagCls;
-      if(isSkipping) { tag='Planning to skip'; tagCls='skip-planning'; }
-      else if(stats.bunkBudget > 2) { tag='Safe'; tagCls='skip-safe'; }
-      else if(stats.bunkBudget > 0) { tag='Risky'; tagCls='skip-risky'; }
-      else { tag='Cannot skip'; tagCls='skip-no'; }
-
-      // Impact if skipping this one more
-      let impactStr = '';
-      if(!isSkipping && stats.pct!==null) {
-        const newPct = stats.held>0?Math.round((stats.attended/(stats.held+1))*100):0;
-        const diff = newPct - (stats.pct||0);
-        impactStr = `Skipping drops ${s.name} to ${newPct}% (${diff}%)`;
-      }
-
-      return `
-        <div class="planner-class-row" onclick="togglePlannerSkip('${ds}','${s.id}')">
-          <div>
-            <div class="planner-class-name">${s.name}</div>
-            <div class="planner-class-sub">${stats.pct!==null?stats.pct+'% now':'No data'} · Budget: ${stats.bunkBudget}</div>
-          </div>
-          <button class="skip-tag ${tagCls}" onclick="event.stopPropagation();togglePlannerSkip('${ds}','${s.id}')">${tag}</button>
-        </div>
-        ${impactStr?`<div class="impact-line">${impactStr}</div>`:''}
-      `;
-    }).join('');
-
-    html += `
-      <div class="planner-card">
-        <div class="planner-day-header">${dayLabel}</div>
-        ${rows}
-      </div>
-    `;
-  }
-
-  if(html === `<div class="section-title">Bunk Planner</div>`) {
-    html += `<div class="empty-state"><div class="empty-state-title">Agle 7 din mein koi class nahi.</div>Lucky you.</div>`;
-  }
-
-  vc.innerHTML = html;
-}
-
-function togglePlannerSkip(ds, subjectId) {
-  if(!state.plannerSkips[ds]) state.plannerSkips[ds]=[];
-  const idx = state.plannerSkips[ds].indexOf(subjectId);
-  if(idx>=0) state.plannerSkips[ds].splice(idx,1);
-  else state.plannerSkips[ds].push(subjectId);
-  saveState();
-  renderPlanner();
-}
-
-// ═══════════════════════════════════════════════════
-//  VIEW 5: SETTINGS
-// ═══════════════════════════════════════════════════
-function renderSettings() {
-  const vc = document.getElementById('view-container');
-  const p = state.profile||{};
-  const overallPct = getOverallPct();
-  const roast = getSessionRoast();
-
-  vc.innerHTML = `
-    <div class="section-title">Settings</div>
-
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-weight:700;font-size:16px;margin-bottom:16px">Profile</div>
-      <div class="form-group">
-        <label class="form-label">Naam</label>
-        <input class="input" id="set-name" value="${p.name||''}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">College</label>
-        <input class="input" id="set-college" value="${p.college||''}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">City</label>
-        <input class="input" id="set-city" value="${p.city||''}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Attendance Threshold (%)</label>
-        <input class="input" type="number" id="set-threshold" value="${p.threshold||75}" min="1" max="100">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Semester start</label>
-        <input class="input" type="date" id="set-start" value="${p.startDate||''}">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Semester end</label>
-        <input class="input" type="date" id="set-end" value="${p.endDate||''}">
-      </div>
-      <button class="btn btn-primary btn-full" onclick="saveSettings()">Save karo</button>
-    </div>
-
-    <div class="section-title" style="margin-top:8px">Shareable Card</div>
-    <div class="share-card-box" id="share-card">
-      <div class="share-card-pct" style="color:${overallPct!==null?(overallPct>=(p.threshold||75)?'var(--success)':overallPct>=(p.threshold||75)-10?'#C69A00':'var(--danger)'):'var(--bg)'}">${overallPct!==null?overallPct+'%':'—'}</div>
-      <div class="share-card-roast">${roast}</div>
-      <div class="share-card-name">${p.name||'Student'} · ${p.college||'College'}</div>
-      <div class="share-card-brand">nudge.</div>
-    </div>
-    <div style="margin:12px 16px 0">
-      <button class="btn btn-secondary btn-full" onclick="screenshotCard()">Screenshot banao</button>
-    </div>
-
-    <div class="reset-zone">
-      <button class="btn btn-danger btn-full" onclick="openModal('modal-reset')">Sab kuch reset karo</button>
-    </div>
-    <div style="height:8px"></div>
-  `;
-}
-
-function saveSettings() {
-  state.profile.name = document.getElementById('set-name').value.trim();
-  state.profile.college = document.getElementById('set-college').value.trim();
-  state.profile.city = document.getElementById('set-city').value.trim();
-  state.profile.threshold = +document.getElementById('set-threshold').value;
-  state.profile.startDate = document.getElementById('set-start').value;
-  state.profile.endDate = document.getElementById('set-end').value;
-  saveState();
-  _sessionRoast = null;
-  renderSettings();
-  alert('Saved. Keep it up.');
-}
-
-function screenshotCard() {
-  alert('Screenshot lene ke liye apne phone ka screenshot button use karo. Card dikhane wala hai screenshot ke liye.');
-}
-
-function doReset() {
-  localStorage.removeItem('nudge_v1');
-  location.reload();
-}
-
-// ═══════════════════════════════════════════════════
-//  ADD SUBJECT MODAL (post-onboarding)
-// ═══════════════════════════════════════════════════
-function openAddSubjectModal() {
-  const content = document.getElementById('modal-add-subject-content');
-  content.innerHTML = `
-    <div class="modal-handle"></div>
-    <div class="modal-title">Naya subject add karo</div>
-    <div class="form-group">
-      <label class="form-label">Subject ka naam</label>
-      <input class="input" id="ms-name" placeholder="e.g. Microeconomics">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Kaunse din?</label>
-      <div class="day-checks" id="ms-days">
-        ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`
-          <label class="day-check-label" id="msdlbl-${d}">
-            <input type="checkbox" value="${DAY_MAP[d]}" onchange="msUpdateDay(this,'${d}')"> ${d}
-          </label>
+        ${STRICTNESS.map(s=>`
+          <button type="button" class="btn-group-item ${p.strictness===s?'selected':''}"
+            onclick="selectOne('strictness','${s}',this.closest('.btn-group'))">${s}</button>
         `).join('')}
       </div>
     </div>
+
     <div class="form-group">
-      <label class="form-label">Lectures per week</label>
-      <input class="input" type="number" id="ms-lpw" min="1" max="6" placeholder="e.g. 3">
-    </div>
-    <div style="display:flex;gap:12px;margin-top:4px">
-      <button class="btn btn-secondary" style="flex:1" onclick="closeModal('modal-add-subject')">Cancel</button>
-      <button class="btn btn-primary" style="flex:1" onclick="doAddSubject()">Add karo</button>
+      <label class="form-label">College kaise jaate ho? <span style="font-weight:400;text-transform:none;letter-spacing:0">(multiple ok)</span></label>
+      <div class="btn-group">
+        ${COMMUTES.map(c=>`
+          <button type="button" class="btn-group-item ${(p.commute||[]).includes(c)?'selected':''}"
+            onclick="toggleCommute('${c}',this)">${c}</button>
+        `).join('')}
+      </div>
     </div>
   `;
-  openModal('modal-add-subject');
-}
 
-function msUpdateDay(el, day) {
-  document.getElementById('msdlbl-'+day).classList.toggle('checked', el.checked);
-}
-
-function doAddSubject() {
-  const name = document.getElementById('ms-name').value.trim();
-  const checks = document.querySelectorAll('#ms-days input:checked');
-  const days = Array.from(checks).map(c=>+c.value);
-  const lpw = +document.getElementById('ms-lpw').value;
-  if(!name||!days.length||!lpw) { alert('Saari info daalo!'); return; }
-  state.subjects.push({ id:'sub_'+Date.now(), name, days, lecturesPerWeek:lpw });
-  saveState();
-  closeModal('modal-add-subject');
-  if(currentView===0) renderDashboard();
-  else if(currentView===1) renderSubjects();
-}
-
-// ═══════════════════════════════════════════════════
-//  MODAL HELPERS
-// ═══════════════════════════════════════════════════
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.modal-overlay').forEach(el=>{
-  el.addEventListener('click', e=>{ if(e.target===el) el.classList.remove('open'); });
-});
-
-// ═══════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════
-loadState();
-if(state.profile && state.subjects.length) {
-  launchApp();
-} else {
-  document.getElementById('onboarding').style.display = 'flex';
-  renderStep1();
-}
-
-// ── PWA SERVICE WORKER ──
-if('serviceWorker' in navigator) {
-  const swCode = `
-    const CACHE='nudge-v1';
-    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/']))));
-    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+  document.getElementById('ob-footer').innerHTML = `
+    <button class="btn btn-primary btn-full" onclick="step1Next()">Aage chalo &rarr;</button>
   `;
-  const blob = new Blob([swCode],{type:'application/javascript'});
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl).catch(()=>{});
 }
 
-// ── MANIFEST ──
-const manifest = {
-  name:'nudge.',
-  short_name:'nudge',
-  start_url:'.',
-  display:'standalone',
-  background_color:'#F0F4FF',
-  theme_color:'#1A1F36',
-  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%234A6CF7"/><text y=".9em" font-size="80" x="10">n</text></svg>',sizes:'any',type:'image/svg+xml'}]
-};
-const mblob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
-document.getElementById('manifest-link').href = URL.createObjectURL(mblob);
+// ── Selection helpers for step 1 ──
+function selectOne(key, val, group) {
+  ob.profile[key] = val;
+  group.querySelectorAll('.btn-group-item').forEach(b => b.classList.toggle('selected', b.textContent === val));
+  // stream change: re-render because semester count changes
+  if (key === 'stream') render();
+}
+function selectOnePrim(key, val, group) {
+  ob.profile[key] = val;
+  group.querySelectorAll('.btn-group-item').forEach(b => b.classList.toggle('selected', +b.textContent === val));
+}
+function selectThresh(t, group) {
+  ob.profile.threshType = t;
+  group.querySelectorAll('.btn-group-item').forEach(b => b.classList.toggle('selected', b.textContent === t));
+  document.getElementById('custom-thresh-wrap').style.display = t === 'Custom' ? 'block' : 'none';
+}
+function toggleCommute(c, btn) {
+  if (!ob.profile.commute) ob.profile.commute = [];
+  const idx = ob.profile.commute.indexOf(c);
+  if (idx >= 0) ob.profile.commute.splice(idx, 1);
+  else ob.profile.commute.push(c);
+  btn.classList.toggle('selected', ob.profile.commute.includes(c));
+}
+function toggleCondonation(checked) {
+  ob.profile.condonation = checked;
+  document.getElementById('cond-label').textContent = checked ? 'Haan' : 'Nahi';
+  document.getElementById('cond-pts-wrap').style.display = checked ? 'block' : 'none';
+}
+
+// ── Step 1 validation & advance ──
+function step1Next() {
+  // read all fields
+  ob.profile.name      = document.getElementById('f-name').value.trim();
+  ob.profile.college   = document.getElementById('f-college').value.trim();
+  ob.profile.city      = document.getElementById('f-city').value.trim();
+  ob.profile.startDate = document.getElementById('f-start').value;
+  ob.profile.endDate   = document.getElementById('f-end').value;
+  if (ob.profile.threshType === 'Custom') {
+    ob.profile.customThresh = document.getElementById('f-custom-thresh').value;
+  }
+  if (ob.profile.condonation) {
+    ob.profile.condonationPts = document.getElementById('f-cond-pts').value;
+  }
+
+  let ok = true;
+  function err(id, show) { document.getElementById(id).classList.toggle('show', show); if(show) ok=false; }
+
+  err('err-name',   !ob.profile.name);
+  err('err-stream', !ob.profile.stream);
+  err('err-sem',    !ob.profile.semester);
+  err('err-start',  !ob.profile.startDate);
+  err('err-end',    !ob.profile.endDate);
+  err('err-thresh', !ob.profile.threshType || (ob.profile.threshType==='Custom' && !ob.profile.customThresh));
+
+  if (!ok) {
+    document.querySelector('.field-error.show')?.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  if (ob.profile.startDate >= ob.profile.endDate) {
+    err('err-end', true);
+    document.getElementById('err-end').textContent = 'End date start se pehle nahi ho sakti.';
+    return;
+  }
+
+  ob.step = 1;
+  render();
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════
+//  STEP 2
+// ══════════════════════════════════
+let addPanelOpen = false;
+
+function renderStep2() {
+  const subjectsHtml = ob.subjects.map((s, i) => `
+    <div class="subject-row">
+      <div>
+        <div class="subject-row-name">${esc(s.name)}</div>
+        <div class="subject-row-meta">
+          ${s.days.map(d => DAY_LABELS_SHORT[d]).join(', ')}
+          &nbsp;·&nbsp; ${s.lecturesPerWeek} lecture${s.lecturesPerWeek>1?'s':''}/week
+        </div>
+      </div>
+      <button class="subject-row-del" onclick="removeSubject(${i})" title="Remove">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+  `).join('');
+
+  const panelHtml = ob.subjects.length < 12 ? `
+    ${addPanelOpen ? `
+    <div class="add-subject-panel" id="add-panel">
+      <div class="form-group">
+        <label class="form-label">Subject ka naam</label>
+        <input class="input" id="ap-name" placeholder="e.g. Engineering Maths">
+        <div class="field-error" id="ap-err-name">Naam toh daalo!</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kaunse din hote hain?</label>
+        <div class="day-checks">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`
+            <label class="day-check-label" id="ap-dlbl-${d}" onclick="toggleDay(this,'${d}')">
+              <input type="checkbox" value="${DAY_MAP[d]}"> ${d}
+            </label>
+          `).join('')}
+        </div>
+        <div class="field-error" id="ap-err-days">Kam se kam ek din choose karo.</div>
+      </div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Lectures per week</label>
+        <input class="input" type="number" id="ap-lpw" min="1" max="14" placeholder="e.g. 3">
+        <div class="field-error" id="ap-err-lpw">Lectures per week daalo.</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="closeAddPanel()">Cancel</button>
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="addSubject()">Subject add karo</button>
+      </div>
+    </div>
+    ` : `
+    <button class="panel-toggle" onclick="openAddPanel()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Subject add karo
+    </button>
+    `}
+  ` : '<p style="font-size:13px;color:var(--text-secondary);text-align:center;padding:16px 0">12 subjects ho gaye. Enough hai.</p>';
+
+  document.getElementById('ob-body').innerHTML = `
+    <div class="ob-step-title">Subjects add karo.</div>
+    <div class="ob-step-sub">Ek ek karke. Baad mein bhi add kar sakte ho settings mein.</div>
+    ${subjectsHtml}
+    ${panelHtml}
+    <div style="height:16px"></div>
+  `;
+
+  document.getElementById('ob-footer').innerHTML = ob.subjects.length > 0 ? `
+    <button class="btn btn-primary btn-full" onclick="finishOnboarding()">
+      Done. Dashboard dikhao.
+    </button>
+    <p style="text-align:center;font-size:12px;color:var(--text-secondary);margin-top:8px">
+      ${ob.subjects.length} subject${ob.subjects.length===1?'':'s'} added
+    </p>
+  ` : `
+    <button class="btn btn-ghost btn-full" disabled style="opacity:0.4;cursor:default">
+      Pehle ek subject add karo
+    </button>
+  `;
+}
+
+function openAddPanel()  { addPanelOpen = true;  renderStep2(); document.getElementById('add-panel')?.scrollIntoView({behavior:'smooth'}); }
+function closeAddPanel() { addPanelOpen = false; renderStep2(); }
+
+function toggleDay(label, day) {
+  const cb = label.querySelector('input');
+  cb.checked = !cb.checked;
+  label.classList.toggle('checked', cb.checked);
+}
+
+function addSubject() {
+  const name = document.getElementById('ap-name').value.trim();
+  const checked = document.querySelectorAll('.day-check-label.checked input');
+  const days = Array.from(checked).map(c => +c.value);
+  const lpw  = +document.getElementById('ap-lpw').value;
+
+  let ok = true;
+  function apErr(id, show, msg='') {
+    const el = document.getElementById(id);
+    el.classList.toggle('show', show);
+    if (msg) el.textContent = msg;
+    if (show) ok = false;
+  }
+  apErr('ap-err-name', !name);
+  apErr('ap-err-days', days.length === 0);
+  apErr('ap-err-lpw',  !lpw || lpw < 1, lpw < 1 ? 'Kam se kam 1 lecture per week.' : '');
+  if (!ok) return;
+
+  ob.subjects.push({ id: uid(), name, days, lecturesPerWeek: lpw });
+  addPanelOpen = false;
+  renderStep2();
+}
+
+function removeSubject(i) {
+  ob.subjects.splice(i, 1);
+  renderStep2();
+}
+
+// ── Finish onboarding ──
+function finishOnboarding() {
+  if (!ob.subjects.length) return;
+
+  const p = ob.profile;
+  const threshMap = { '75%': 75, '80%': 80, '85%': 85 };
+  const threshold = p.threshType === 'Custom' ? +p.customThresh : threshMap[p.threshType];
+
+  const state = {
+    profile: {
+      name:          p.name,
+      college:       p.college || '',
+      city:          p.city || '',
+      stream:        p.stream || '',
+      semester:      p.semester || 1,
+      startDate:     p.startDate,
+      endDate:       p.endDate,
+      threshold:     threshold,
+      thresholdType: p.threshType,
+      condonation:   p.condonation || false,
+      condonationPts:+( p.condonationPts || 0),
+      strictness:    p.strictness || '',
+      commute:       p.commute || []
+    },
+    subjects:     ob.subjects,
+    logs:         {},
+    plannerSkips: {}
+  };
+
+  saveState(state);
+  window.location.href = 'dashboard.html';
+}
+
+// ── Escape helper ──
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// ── Boot ──
+render();
 </script>
 </body>
 </html>
